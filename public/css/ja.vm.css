@@ -1,0 +1,264 @@
+DIV.vm_element {
+	LEFT: -999em;
+	POSITION: absolute;
+}
+.productPrice {
+	FONT-WEIGHT: bold;
+}
+.addtocart_button_module {
+	PADDING-RIGHT: 0px;
+	MARGIN-TOP: 5px;
+	PADDING-LEFT: 0px;
+	FONT-WEIGHT: bold;
+	BACKGROUND: url('/images/bt-addtocart1.gif') #00a9dd no-repeat 50% top;
+	PADDING-BOTTOM: 2px;
+	WIDTH: 102px;
+	CURSOR: pointer;
+	COLOR: #ffffff;
+	BORDER-TOP-STYLE: none;
+	TEXT-INDENT: 18px;
+	PADDING-TOP: 0px;
+	BORDER-RIGHT-STYLE: none;
+	BORDER-LEFT-STYLE: none;
+	HEIGHT: 22px;
+	BORDER-BOTTOM-STYLE: none;
+}
+.notify_button {
+	PADDING-RIGHT: 0px;
+	MARGIN-TOP: 5px;
+	PADDING-LEFT: 0px;
+	FONT-WEIGHT: bold;
+	BACKGROUND: url('/images/bt-addtocart1.gif') #00a9dd no-repeat 50% top;
+	PADDING-BOTTOM: 2px;
+	WIDTH: 102px;
+	CURSOR: pointer;
+	COLOR: #ffffff;
+	BORDER-TOP-STYLE: none;
+	TEXT-INDENT: 18px;
+	PADDING-TOP: 0px;
+	BORDER-RIGHT-STYLE: none;
+	BORDER-LEFT-STYLE: none;
+	HEIGHT: 22px;
+	BORDER-BOTTOM-STYLE: none;
+}
+.addtocart_button_module:hover {
+	BACKGROUND: url('/images/bt-addtocart1.gif') #666666 no-repeat 50% bottom;
+	COLOR: #ffffff;
+}
+.addtocart_button_module:active {
+	BACKGROUND: url('/images/bt-addtocart1.gif') #666666 no-repeat 50% bottom;
+	COLOR: #ffffff;
+}
+.notify_button {
+	BACKGROUND: url('/images/bt-notify.gif') #00a9dd no-repeat;
+}
+INPUT.addtocart_button {
+	PADDING-RIGHT: 0px;
+	PADDING-LEFT: 0px;
+	BACKGROUND: url('/images/bt-addtocart1.gif') #00a9dd no-repeat 50% top;
+	PADDING-BOTTOM: 2px;
+	MARGIN: 10px 0px 0px;
+	WIDTH: 102px;
+	COLOR: #ffffff;
+	BORDER-TOP-STYLE: none;
+	TEXT-INDENT: 18px;
+	PADDING-TOP: 0px;
+	BORDER-RIGHT-STYLE: none;
+	BORDER-LEFT-STYLE: none;
+	HEIGHT: 22px;
+	BORDER-BOTTOM-STYLE: none;
+}
+.vmFieldTitle {
+	BACKGROUND: url('/images/dot-h.gif') repeat-x 50% top;
+	MARGIN-BOTTOM: 5px;
+	PADDING-TOP: 10px;
+}
+.chars-written {
+	MARGIN-TOP: 5px;
+}
+.chars-written INPUT {
+	BACKGROUND: #f7f7f7;
+}
+.vm-footer {
+	MARGIN: 15px 0px 20px;
+}
+#vmMainPage A.category {
+	COLOR: #666666;
+	TEXT-DECORATION: none;
+}
+#vmMainPage A.category:hover {
+	COLOR: #00a9dd;
+	TEXT-DECORATION: none;
+}
+#vmMainPage A.category:active {
+	COLOR: #00a9dd;
+	TEXT-DECORATION: none;
+}
+#vmMainPage HR {
+	MARGIN: 5px 0px;
+}
+.ja-vmreview STRONG {
+	DISPLAY: block;
+}
+.ja-vmreview BLOCKQUOTE {
+	PADDING-RIGHT: 0px;
+	PADDING-LEFT: 30px;
+	BACKGROUND: url('/images/so-q.gif') no-repeat left top;
+	MARGIN-BOTTOM: 20px;
+	PADDING-BOTTOM: 0px;
+	PADDING-TOP: 0px;
+}
+.vm TABLE {
+	PADDING-RIGHT: 0px;
+	DISPLAY: block;
+	PADDING-LEFT: 0px;
+	PADDING-BOTTOM: 0px;
+	MARGIN: 15px 0px;
+	WIDTH: 100% !important;
+	PADDING-TOP: 0px;
+}
+.vm HR {
+	MARGIN: 0px -15px;
+}
+.vm LABEL {
+	FONT-WEIGHT: bold;
+	TEXT-TRANSFORM: uppercase;
+}
+#ja-vmcart {
+	Z-INDEX: 10;
+	RIGHT: 15px;
+	WIDTH: 200px;
+	POSITION: absolute;
+	TOP: 0px;
+	HEIGHT: 74px;
+}
+#ja-vmcart DIV.moduletable {
+	PADDING-RIGHT: 15px;
+	PADDING-LEFT: 15px;
+	BACKGROUND: url('/images/vmcart-bg.gif') #ffffff no-repeat right 15px;
+	PADDING-BOTTOM: 0px;
+	OVERFLOW: hidden;
+	BORDER-TOP-STYLE: none;
+	PADDING-TOP: 0px;
+	BORDER-RIGHT-STYLE: none;
+	BORDER-LEFT-STYLE: none;
+	HEIGHT: 100px;
+	BORDER-BOTTOM-STYLE: none;
+}
+#ja-vmcart DIV.moduletable H3 {
+	PADDING-RIGHT: 0px;
+	PADDING-LEFT: 0px;
+	BACKGROUND: none transparent scroll repeat 0% 0%;
+	PADDING-BOTTOM: 10px;
+	MARGIN: 0px;
+	BORDER-TOP-STYLE: none;
+	PADDING-TOP: 15px;
+	BORDER-RIGHT-STYLE: none;
+	BORDER-LEFT-STYLE: none;
+	TEXT-ALIGN: center;
+	BORDER-BOTTOM-STYLE: none;
+}
+DIV.vm-showcart A {
+	DISPLAY: block;
+	FONT-WEIGHT: bold;
+	BACKGROUND: url('/images/bt-viewcart.gif') #00a9dd no-repeat;
+	MARGIN-LEFT: 45px;
+	WIDTH: 73px;
+	COLOR: #ffffff;
+	LINE-HEIGHT: 21px;
+	HEIGHT: 22px;
+	TEXT-ALIGN: center;
+}
+DIV.vm-showcart A:hover {
+	COLOR: #ffffff;
+	TEXT-DECORATION: none;
+}
+DIV.vm-showcart A:active {
+	COLOR: #ffffff;
+	TEXT-DECORATION: none;
+}
+.vm-total-pro {
+	CLEAR: left;
+	PADDING-RIGHT: 0px;
+	PADDING-LEFT: 0px;
+	PADDING-BOTTOM: 0px;
+	PADDING-TOP: 10px;
+	TEXT-ALIGN: center;
+}
+.vmCartModule A IMG {
+	DISPLAY: none;
+}
+.vmCartModule HR {
+	DISPLAY: none;
+}
+#ja-vmcurrency .button {
+	BACKGROUND: url('/images/bt-currency.gif') #00a9dd no-repeat 50% top;
+	MARGIN-LEFT: 5px;
+	WIDTH: 110px;
+	BORDER-TOP-STYLE: none;
+	LINE-HEIGHT: 22px;
+	BORDER-RIGHT-STYLE: none;
+	BORDER-LEFT-STYLE: none;
+	HEIGHT: 22px;
+	BORDER-BOTTOM-STYLE: none;
+}
+A.mainlevel {
+	PADDING-RIGHT: 15px;
+	BORDER-TOP: #e6e6e6 1px solid;
+	DISPLAY: block;
+	PADDING-LEFT: 15px;
+	BACKGROUND: url('/images/arrow.png') no-repeat 92% 14px;
+	PADDING-BOTTOM: 9px;
+	MARGIN: 0px -15px;
+	TEXT-TRANSFORM: uppercase;
+	COLOR: #666666;
+	PADDING-TOP: 8px;
+	TEXT-DECORATION: none;
+	outline: none;
+}
+A.mainlevel:hover {
+	BACKGROUND: url('/images/arrow.png') #f7f7f7 no-repeat 92% 14px;
+	TEXT-DECORATION: none;
+}
+A.mainlevel:active {
+	BACKGROUND: url('/images/arrow.png') #f7f7f7 no-repeat 92% 14px;
+	TEXT-DECORATION: none;
+}
+A#active_menu {
+	FONT-WEIGHT: bold;
+	BACKGROUND: url('/images/arrow.png') #ffffcc no-repeat 92% 14px;
+	FONT-STYLE: normal !important;
+}
+#ja-slider {
+	MARGIN-TOP: 1px;
+	POSITION: relative;
+}
+#ja-slider-left {
+	LEFT: 0px;
+	WIDTH: 20px;
+	POSITION: absolute;
+	TOP: 0px;
+}
+#ja-slide-left-img {
+	POSITION: absolute;
+	TOP: 0px;
+}
+#ja-slide-right-img {
+	POSITION: absolute;
+	TOP: 0px;
+}
+#ja-slider-center {
+	LEFT: 20px;
+	HEIGHT: 165px;
+}
+#ja-slider-right {
+	RIGHT: 0px;
+	WIDTH: 20px;
+	POSITION: absolute;
+	TOP: 0px;
+}
+.jsslide {
+	OVERFLOW: hidden;
+	WHITE-SPACE: nowrap;
+	TEXT-ALIGN: center;
+}

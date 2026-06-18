@@ -1,0 +1,52 @@
+.transMenu {
+	position: absolute;
+	overflow: hidden;
+	left: -100px;
+	top: -100px;
+}
+.transMenu .content {
+	position: absolute;
+}
+.transMenu .items {
+	position: relative;
+	left: 0px;
+	top: 0px;
+	z-index: 2;
+}
+.transMenu.top .items {
+	border-top: none;
+}
+.transMenu .shadowRight {
+	position: absolute;
+	z-index: 3;
+	top: 3px;
+	width: 2px;
+	-moz-opacity: 0;
+	filter: alpha(opacity=0);
+}
+.transMenu .shadowBottom {
+	position: absolute;
+	z-index: 1;
+	left: 3px;
+	height: 2px;
+	-moz-opacity: 0;
+	filter: alpha(opacity=0);
+}
+.background {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 1;
+	-moz-opacity: 0;
+	filter: alpha(opacity=0);
+}
+#wrap {
+	margin: 0px;
+	padding: 0px;
+}
+#menu {
+	margin: 0px;
+	padding: 0px;
+	display: block;
+	width: 100%;
+}

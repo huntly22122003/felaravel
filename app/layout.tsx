@@ -1,8 +1,6 @@
-// D:\TongLaravel\frontend\app\layout.tsx
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Navbar from '@/components/Navbar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,9 +16,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
+      <head>
+        <link rel="stylesheet" href="/css/style.css" />
+        <link rel="stylesheet" href="/css/template_css.css" />
+        <link rel="stylesheet" href="/css/transmenuv.css" />
+        <link rel="stylesheet" href="/css/lightbox.css" />
+        <link rel="stylesheet" href="/css/template.css" />
+        <link rel="stylesheet" href="/css/ja.vm.css" />
+      </head>
       <body className={inter.className}>
-        <Navbar />
-        <main className="container mx-auto p-4">{children}</main>
+        {children}
       </body>
     </html>
   );

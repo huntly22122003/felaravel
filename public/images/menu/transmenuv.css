@@ -1,0 +1,60 @@
+/* this is the clipping region for the menu. it's width and height get set by script, depending on the size of the items table */
+.transMenu {
+	position:absolute;
+	overflow:hidden;
+	left:-100px;
+	top:-100px;
+	}
+
+/* this is the main container for the menu itself. it's width and height get set by script, depending on the size of the items table */
+.transMenu .content {
+	position:absolute;
+}
+/* this table comprises all menu items. each TR is one item. It is relatively positioned so that the shadow and background transparent divs can be positioned underneath it */
+.transMenu .items {
+	position:relative;
+	left:0px; top:0px;
+	z-index:2;
+	}
+
+.transMenu.top .items {
+	border-top:none;
+	}
+
+/* same concept as .background, but this is the sliver of shadow on the right of the menu. It's left, height, and background are set by script. In IE5/mac, it uses a PNG */
+.transMenu .shadowRight {
+	position:absolute;
+	z-index:3;
+	top:3px; width:2px;
+	-moz-opacity:0;
+	filter:alpha(opacity=0);
+	}
+
+/* same concept as .background, but this is the sliver of shadow on the bottom of the menu. It's top, width, and background are set by script. In IE5/mac, it uses a PNG */
+.transMenu .shadowBottom {
+	position:absolute;
+	z-index:1;
+	left:3px; height:2px;
+	-moz-opacity:0;
+	filter:alpha(opacity=0);
+	}
+
+.background {
+	position:absolute;
+	left:0px; top:0px;
+	z-index:1;
+	-moz-opacity:0;
+	filter:alpha(opacity=0);
+}
+
+#wrap {
+   margin: 0px;
+   padding: 0px;
+}
+#menu {
+   margin: 0px;
+   padding: 0px;
+   display:block;
+   width:100%;
+
+}
