@@ -6,7 +6,7 @@ export default function Footer() {
       <tbody>
         <tr>
           <td align="center">
-            <table style={{ width: '915px', height: '54px', border: 0 }} cellPadding="0" cellSpacing="0">
+            <table style={{ width: '914px', height: '54px', border: 0, margin: '0 auto' }} cellPadding="0" cellSpacing="0">
               <tbody>
                 <tr>
                   <td className="footer" valign="bottom" align="center">

@@ -17,9 +17,9 @@ export default function HomePage() {
   useEffect(() => {
     Promise.all([fetchCategories(), fetchProducts(), fetchBanners()])
       .then(([cats, prods, banners]) => {
-        setCategories(cats || []);
-        setProducts(prods?.data || prods || []);
-        setBanners(banners || []);
+        setCategories(Array.isArray(cats) ? cats : []);
+        setProducts(Array.isArray(prods?.data) ? prods.data : (Array.isArray(prods) ? prods : []));
+        setBanners(Array.isArray(banners) ? banners : []);
         setLoading(false);
       })
       .catch((err) => {
@@ -35,7 +35,7 @@ export default function HomePage() {
   return (
     <div style={{ fontFamily: 'Tahoma, Verdana', fontSize: '11px' }}>
       
-      {/* ===== HEADER + MENU NGANG ===== */}
+      {/* ===== HEADER ===== */}
       <Header>
         <MenuNgang categories={categories} />
       </Header>
@@ -44,33 +44,36 @@ export default function HomePage() {
       <table cellPadding="0" cellSpacing="0" style={{ width: '100%', border: 0 }}>
         <tbody>
           <tr>
-            <td align="center" className="bgallpage">
-              <table style={{ width: '915px', border: 0 }} cellPadding="0" cellSpacing="0">
+            <td className="bgallpage" align="center">
+              <table style={{ width: '914px', border: 0, margin: '0 auto' }} cellPadding="0" cellSpacing="0">
                 <tbody>
                   <tr>
                     <td className="bgbienleft" valign="top">
-                      <table cellPadding="0" cellSpacing="0" style={{ width: '12px', border: 0 }}>
-                        <tbody><tr><td className="bienleft">&nbsp;</td></tr></tbody>
+                      <table style={{ width: '12px', border: 0 }} cellPadding="0" cellSpacing="0">
+                        <tbody>
+                          <tr><td className="bienleft">&nbsp;</td></tr>
+                        </tbody>
                       </table>
                     </td>
                     <td style={{ backgroundColor: '#FDFDFD' }} align="left" valign="top">
-                      <table cellPadding="0" cellSpacing="0" style={{ width: '100%', border: 0 }}>
+                      <table style={{ width: '100%', border: 0 }} cellPadding="0" cellSpacing="0">
                         <tbody>
                           <tr>
-                            <td style={{ width: '196px' }} valign="top" align="left">
+                            <td style={{ width: '196px' }} valign="top" align="center">
                               <MenuTrai categories={categories} />
                             </td>
-                            <td valign="top" align="center" style={{ padding: '0 10px' }}>
+                            <td valign="top" align="center">
                               <MainContent products={products} banners={banners} />
                             </td>
-                            {/* Có thể thêm MenuPhai ở đây nếu cần */}
                           </tr>
                         </tbody>
                       </table>
                     </td>
                     <td className="bgbienright" valign="top">
-                      <table cellPadding="0" cellSpacing="0" style={{ width: '12px', border: 0 }}>
-                        <tbody><tr><td className="bienright">&nbsp;</td></tr></tbody>
+                      <table style={{ width: '12px', border: 0 }} cellPadding="0" cellSpacing="0">
+                        <tbody>
+                          <tr><td className="bienright">&nbsp;</td></tr>
+                        </tbody>
                       </table>
                     </td>
                   </tr>
