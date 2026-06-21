@@ -7,139 +7,74 @@ interface MenuNgangProps {
 }
 
 export default function MenuNgang({ categories }: MenuNgangProps) {
-  const [showGioiThieu, setShowGioiThieu] = useState(false);
-  const [showSanPham, setShowSanPham] = useState(false);
+  const [hoverGioiThieu, setHoverGioiThieu] = useState(false);
+  const [hoverSanPham, setHoverSanPham] = useState(false);
 
-  // Lọc danh mục con của Giới thiệu (parent_id = 82) và Sản phẩm (parent_id = 84)
   const catsGioiThieu = categories.filter((c: any) => c.parent_id === 82);
   const catsSanPham = categories.filter((c: any) => c.parent_id === 84);
+
+  const renderDropdown = (items: any[], baseAction: string) => {
+    if (items.length === 0) return null;
+    return (
+      <table
+        border={0}
+        style={{
+          position: 'absolute',
+          visibility: 'visible',
+          backgroundColor: '#FFFFFF',
+          width: '200px',
+          top: '100%',
+          left: 0,
+          zIndex: 1000,
+          border: '1px solid #999999',
+        }}
+        cellPadding={0}
+        cellSpacing={0}
+      >
+        <tbody>
+          {items.map((cat: any, idx: number) => {
+            const cls = idx === items.length - 1 ? 'bgsubmenu100' : `bgsubmenu${(idx % 8) + 1}`;
+            return (
+              <tr key={cat.id}>
+                <td align="left" className={cls}>
+                  <a href={`?sAction=${baseAction}&cateID=${cat.id}`}>&nbsp;&nbsp;&nbsp;{cat.name}</a>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    );
+  };
 
   return (
     <div id="wrapmnu" style={{ width: '708px' }}>
       <div id="menugiua">
-        <table style={{ width: '708px', height: '72px', border: 0, margin: 0 }} cellPadding="0" cellSpacing="0">
+        <table cellPadding="0" cellSpacing="0" style={{ height: '72px', width: '708px', border: 0 }}>
           <tbody>
             <tr>
-              <td className="trangchu">
-                <a href="/">Trang chủ</a>
+              <td className="trangchu"><a href="/">Trang chủ</a></td>
+              <td
+                className="gioithieu"
+                style={{ position: 'relative' }}
+                onMouseEnter={() => setHoverGioiThieu(true)}
+                onMouseLeave={() => setHoverGioiThieu(false)}
+              >
+                <a id="ddmenu_parent" href="#" style={{ cursor: 'pointer' }}>Giới thiệu</a>
+                {hoverGioiThieu && renderDropdown(catsGioiThieu, '8')}
               </td>
-              <td className="gioithieu" style={{ position: 'relative' }}>
-                <a
-                  id="ddmenu_parent"
-                  href="#"
-                  style={{ cursor: 'pointer' }}
-                  onMouseEnter={() => setShowGioiThieu(true)}
-                  onMouseLeave={() => setShowGioiThieu(false)}
-                >
-                  Giới thiệu
-                </a>
-                {showGioiThieu && (
-                  <table
-                    id="ddmenu_child"
-                    style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      backgroundColor: '#FFFFFF',
-                      width: '200px',
-                      border: '1px solid #999999',
-                      zIndex: 1000,
-                    }}
-                    cellPadding="0"
-                    cellSpacing="0"
-                    onMouseEnter={() => setShowGioiThieu(true)}
-                    onMouseLeave={() => setShowGioiThieu(false)}
-                  >
-                    <tbody>
-                      {catsGioiThieu.length === 0 ? (
-                        <tr>
-                          <td className="bgsubmenu100" align="left" style={{ paddingLeft: '10px' }}>
-                            Chưa có
-                          </td>
-                        </tr>
-                      ) : (
-                        catsGioiThieu.map((cat: any, idx: number) => {
-                          const cls =
-                            idx === catsGioiThieu.length - 1
-                              ? 'bgsubmenu100'
-                              : `bgsubmenu${(idx % 8) + 1}`;
-                          return (
-                            <tr key={cat.id}>
-                              <td className={cls} align="left" style={{ paddingLeft: '15px', lineHeight: '30px' }}>
-                                <a href={`?sAction=8&cateID=${cat.id}`}>{cat.name}</a>
-                              </td>
-                            </tr>
-                          );
-                        })
-                      )}
-                    </tbody>
-                  </table>
-                )}
+              <td className="gioithieu"><a href="?sAction=7">Tin tức</a></td>
+              <td
+                className="gioithieu"
+                style={{ position: 'relative' }}
+                onMouseEnter={() => setHoverSanPham(true)}
+                onMouseLeave={() => setHoverSanPham(false)}
+              >
+                <a id="menusanpham" href="#" style={{ cursor: 'pointer' }}>Sản phẩm</a>
+                {hoverSanPham && renderDropdown(catsSanPham, '10')}
               </td>
-              <td className="gioithieu">
-                <a href="?sAction=7">Tin tức</a>
-              </td>
-              <td className="gioithieu" style={{ position: 'relative' }}>
-                <a
-                  id="menusanpham"
-                  href="#"
-                  style={{ cursor: 'pointer' }}
-                  onMouseEnter={() => setShowSanPham(true)}
-                  onMouseLeave={() => setShowSanPham(false)}
-                >
-                  Sản phẩm
-                </a>
-                {showSanPham && (
-                  <table
-                    id="ddmenu_sanpham"
-                    style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      backgroundColor: '#FFFFFF',
-                      width: '200px',
-                      border: '1px solid #999999',
-                      zIndex: 1000,
-                    }}
-                    cellPadding="0"
-                    cellSpacing="0"
-                    onMouseEnter={() => setShowSanPham(true)}
-                    onMouseLeave={() => setShowSanPham(false)}
-                  >
-                    <tbody>
-                      {catsSanPham.length === 0 ? (
-                        <tr>
-                          <td className="bgsubmenu100" align="left" style={{ paddingLeft: '10px' }}>
-                            Chưa có
-                          </td>
-                        </tr>
-                      ) : (
-                        catsSanPham.map((cat: any, idx: number) => {
-                          const cls =
-                            idx === catsSanPham.length - 1
-                              ? 'bgsubmenu100'
-                              : `bgsubmenu${(idx % 8) + 1}`;
-                          return (
-                            <tr key={cat.id}>
-                              <td className={cls} align="left" style={{ paddingLeft: '15px', lineHeight: '30px' }}>
-                                <a href={`?sAction=10&cateID=${cat.id}`}>{cat.name}</a>
-                              </td>
-                            </tr>
-                          );
-                        })
-                      )}
-                    </tbody>
-                  </table>
-                )}
-              </td>
-              <td className="gioithieu">
-                <a href="/online/" target="_blank">
-                  Mua hàng
-                </a>
-              </td>
-              <td align="center">
-                <a href="?sAction=6">Liên hệ</a>
-              </td>
+              <td className="gioithieu"><a href="/online/" target="_blank">Mua hàng</a></td>
+              <td align="center"><a href="?sAction=6">Liên hệ</a></td>
             </tr>
           </tbody>
         </table>

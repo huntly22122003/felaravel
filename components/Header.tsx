@@ -1,10 +1,12 @@
 'use client';
 
+import MenuNgang from './MenuNgang';
+
 interface HeaderProps {
-  children?: React.ReactNode;
+  categories: any[];
 }
 
-export default function Header({ children }: HeaderProps) {
+export default function Header({ categories }: HeaderProps) {
   return (
     <table cellPadding="0" cellSpacing="0" style={{ width: '100%', border: 0 }}>
       <tbody>
@@ -24,7 +26,9 @@ export default function Header({ children }: HeaderProps) {
                         </tr>
                         <tr>
                           <td style={{ width: '206px' }}>&nbsp;</td>
-                          <td align="left">{children}</td>
+                          <td align="left">
+                            <MenuNgang categories={categories} />
+                          </td>
                         </tr>
                       </tbody>
                     </table>
