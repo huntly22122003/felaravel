@@ -243,3 +243,68 @@ export const deleteCategory = async (id: number) => {
   if (!res.ok) throw new Error('Failed to delete category');
   return res.json();
 };
+
+// ===== Users (Admin) =====
+export const getUsers = async (params?: any) => {
+  const token = getToken();
+  const query = new URLSearchParams(params || {}).toString();
+  const url = query ? `${API_BASE}/users?${query}` : `${API_BASE}/users`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch users');
+  return res.json();
+};
+
+export const getUser = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/users/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch user');
+  return res.json();
+};
+
+export const createUser = async (data: any) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/users`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw { response: { data: errorData }, message: errorData.message || 'Failed to create user' };
+  }
+  return res.json();
+};
+
+export const updateUser = async (id: number, data: any) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/users/${id}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw { response: { data: errorData }, message: errorData.message || 'Failed to update user' };
+  }
+  return res.json();
+};
+
+export const deleteUser = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/users/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to delete user');
+  return res.json();
+};

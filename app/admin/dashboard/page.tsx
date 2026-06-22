@@ -62,7 +62,7 @@ export default function AdminDashboard() {
 
       <p>Xin chào, {user?.name || user?.username || 'Admin'}!</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginTop: '20px' }}>
         <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
           <h3>Sản phẩm</h3>
           <p>Quản lý sản phẩm</p>
@@ -74,14 +74,34 @@ export default function AdminDashboard() {
           <a href="/admin/categories">Đi đến</a>
         </div>
         <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
-          <h3>Đơn hàng</h3>
-          <p>Quản lý đơn hàng</p>
-          <a href="/admin/orders">Đi đến</a>
+          <h3>Tin tức</h3>
+          <p>Quản lý tin tức</p>
+          <a href="/admin/posts">Đi đến</a>
+        </div>
+        <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
+          <h3>Thư viện ảnh</h3>
+          <p>Quản lý thư viện ảnh</p>
+          <a href="/admin/galleries">Đi đến</a>
         </div>
         <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
           <h3>Banner</h3>
           <p>Quản lý banner quảng cáo</p>
           <a href="/admin/banners">Đi đến</a>
+        </div>
+        <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
+          <h3>Người dùng</h3>
+          <p>Quản lý người dùng</p>
+          <a href="/admin/users">Đi đến</a>
+        </div>
+        <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
+          <h3>Đơn hàng</h3>
+          <p>Quản lý đơn hàng</p>
+          <a href="/admin/orders">Đi đến</a>
+        </div>
+        <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
+          <h3>Liên hệ</h3>
+          <p>Quản lý liên hệ</p>
+          <a href="/admin/contacts">Đi đến</a>
         </div>
       </div>
     </div>
