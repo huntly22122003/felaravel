@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createProduct, updateProduct, getProduct } from '@/services/adminApi';
+import './product-form.css'; // Sửa lại import
 
 export default function ProductForm({ params }: { params?: { id: string } }) {
   const router = useRouter();
@@ -22,36 +23,45 @@ export default function ProductForm({ params }: { params?: { id: string } }) {
   });
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isEdit) {
-      getProduct(parseInt(params.id!))
-        .then(data => {
-          setForm({
-            name: data.name,
-            price: data.price || '',
-            category_id: data.category_id || '',
-            summary: data.summary || '',
-            description: data.description || '',
-            technic_info: data.technic_info || '',
-            code: data.code || '',
-            is_new: data.is_new || false,
-            is_featured: data.is_featured || false,
-            sort_order: data.sort_order || 0,
-          });
-        })
-        .catch((err) => setError('Lỗi tải sản phẩm: ' + err.message));
+      loadProduct();
     }
   }, [isEdit, params]);
+
+  const loadProduct = async () => {
+    setLoading(true);
+    try {
+      const data = await getProduct(parseInt(params!.id!));
+      setForm({
+        name: data.name,
+        price: data.price || '',
+        category_id: data.category_id || '',
+        summary: data.summary || '',
+        description: data.description || '',
+        technic_info: data.technic_info || '',
+        code: data.code || '',
+        is_new: data.is_new || false,
+        is_featured: data.is_featured || false,
+        sort_order: data.sort_order || 0,
+      });
+    } catch (err: any) {
+      setError('Lỗi tải sản phẩm: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
       if (value !== undefined && value !== null && key !== 'thumbnail_file') {
-        // Xử lý boolean: gửi 1/0
         if (typeof value === 'boolean') {
           formData.append(key, value ? '1' : '0');
         } else {
@@ -83,134 +93,199 @@ export default function ProductForm({ params }: { params?: { id: string } }) {
       }
       setError(errorMsg);
       console.error('Lỗi chi tiết:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (loading) return (
+    <div className="product-form-loading">
+      <div className="product-form-spinner"></div>
+      <p>Đang tải...</p>
+    </div>
+  );
+
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>{isEdit ? 'Sửa sản phẩm' : 'Thêm sản phẩm'}</h1>
+    <div className="product-form-container">
+      <div className="product-form-header">
+        <div>
+          <h1 className="product-form-title">
+            {isEdit ? '✏️ Sửa sản phẩm' : '🌱 Thêm sản phẩm mới'}
+          </h1>
+          <p className="product-form-subtitle">
+            {isEdit ? 'Cập nhật thông tin sản phẩm' : 'Thêm sản phẩm mới vào cửa hàng'}
+          </p>
+        </div>
+      </div>
+
       {error && (
-        <div style={{ background: '#fee', color: '#c00', padding: '10px', borderRadius: '4px', marginBottom: '16px', border: '1px solid #fcc' }}>
-          <strong>Lỗi:</strong> {error}
+        <div className="product-form-error">
+          <span className="product-form-error-icon">⚠️</span>
+          <div>
+            <strong>Lỗi:</strong> {error}
+          </div>
         </div>
       )}
-      <form onSubmit={handleSubmit} style={{ maxWidth: '600px' }}>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Tên sản phẩm:</label>
-          <input
-            type="text"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-            required
-          />
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Giá:</label>
-          <input
-            type="number"
-            value={form.price}
-            onChange={(e) => setForm({ ...form, price: e.target.value })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Danh mục:</label>
-          <select
-            value={form.category_id}
-            onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-          >
-            <option value="">Chọn danh mục</option>
-          </select>
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Tóm tắt:</label>
-          <textarea
-            value={form.summary}
-            onChange={(e) => setForm({ ...form, summary: e.target.value })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-            rows={3}
-          />
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Mô tả:</label>
-          <textarea
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-            rows={5}
-          />
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Thông số kỹ thuật:</label>
-          <textarea
-            value={form.technic_info}
-            onChange={(e) => setForm({ ...form, technic_info: e.target.value })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-            rows={4}
-          />
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Mã sản phẩm:</label>
-          <input
-            type="text"
-            value={form.code}
-            onChange={(e) => setForm({ ...form, code: e.target.value })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={form.is_new}
-              onChange={(e) => setForm({ ...form, is_new: e.target.checked })}
-            />
-            Sản phẩm mới
-          </label>
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={form.is_featured}
-              onChange={(e) => setForm({ ...form, is_featured: e.target.checked })}
-            />
-            Nổi bật
-          </label>
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Thứ tự:</label>
-          <input
-            type="number"
-            value={form.sort_order}
-            onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Ảnh sản phẩm:</label>
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-            style={{ width: '100%' }}
-          />
-        </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button
-            type="submit"
-            style={{ background: '#4A865A', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-          >
-            Lưu
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push('/admin/products')}
-            style={{ background: '#ccc', padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-          >
-            Hủy
-          </button>
+
+      <form onSubmit={handleSubmit} className="product-form">
+        <div className="product-form-grid">
+          {/* Left Column */}
+          <div className="product-form-left">
+            <div className="product-form-card">
+              <h3 className="product-form-card-title">📋 Thông tin cơ bản</h3>
+              
+              <div className="product-form-group">
+                <label className="product-form-label">Tên sản phẩm <span className="product-form-required">*</span></label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="product-form-input"
+                  placeholder="Nhập tên sản phẩm"
+                  required
+                />
+              </div>
+
+              <div className="product-form-row">
+                <div className="product-form-group">
+                  <label className="product-form-label">Giá (VNĐ)</label>
+                  <input
+                    type="number"
+                    value={form.price}
+                    onChange={(e) => setForm({ ...form, price: e.target.value })}
+                    className="product-form-input"
+                    placeholder="0"
+                  />
+                </div>
+                <div className="product-form-group">
+                  <label className="product-form-label">Mã sản phẩm</label>
+                  <input
+                    type="text"
+                    value={form.code}
+                    onChange={(e) => setForm({ ...form, code: e.target.value })}
+                    className="product-form-input"
+                    placeholder="SP-001"
+                  />
+                </div>
+              </div>
+
+              <div className="product-form-group">
+                <label className="product-form-label">Danh mục</label>
+                <select
+                  value={form.category_id}
+                  onChange={(e) => setForm({ ...form, category_id: e.target.value })}
+                  className="product-form-select"
+                >
+                  <option value="">Chọn danh mục</option>
+                </select>
+              </div>
+
+              <div className="product-form-group">
+                <label className="product-form-label">Tóm tắt</label>
+                <textarea
+                  value={form.summary}
+                  onChange={(e) => setForm({ ...form, summary: e.target.value })}
+                  className="product-form-textarea"
+                  rows={3}
+                  placeholder="Tóm tắt ngắn về sản phẩm"
+                />
+              </div>
+
+              <div className="product-form-group">
+                <label className="product-form-label">Mô tả chi tiết</label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  className="product-form-textarea"
+                  rows={5}
+                  placeholder="Mô tả chi tiết về sản phẩm"
+                />
+              </div>
+
+              <div className="product-form-group">
+                <label className="product-form-label">Thông số kỹ thuật</label>
+                <textarea
+                  value={form.technic_info}
+                  onChange={(e) => setForm({ ...form, technic_info: e.target.value })}
+                  className="product-form-textarea"
+                  rows={4}
+                  placeholder="Thông số kỹ thuật của sản phẩm"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div className="product-form-right">
+            <div className="product-form-card">
+              <h3 className="product-form-card-title">⚙️ Cài đặt</h3>
+              
+              <div className="product-form-group">
+                <label className="product-form-label">Thứ tự hiển thị</label>
+                <input
+                  type="number"
+                  value={form.sort_order}
+                  onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
+                  className="product-form-input"
+                  placeholder="0"
+                />
+              </div>
+
+              <div className="product-form-checkbox-group">
+                <label className="product-form-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={form.is_new}
+                    onChange={(e) => setForm({ ...form, is_new: e.target.checked })}
+                  />
+                  <span className="product-form-checkbox-label">🆕 Sản phẩm mới</span>
+                </label>
+                <label className="product-form-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={form.is_featured}
+                    onChange={(e) => setForm({ ...form, is_featured: e.target.checked })}
+                  />
+                  <span className="product-form-checkbox-label">⭐ Nổi bật</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="product-form-card">
+              <h3 className="product-form-card-title">🖼️ Ảnh sản phẩm</h3>
+              
+              <div className="product-form-upload">
+                <div className="product-form-upload-area">
+                  <div className="product-form-upload-icon">📸</div>
+                  <p className="product-form-upload-text">Kéo thả ảnh vào đây hoặc</p>
+                  <label className="product-form-upload-btn">
+                    Chọn ảnh
+                    <input
+                      type="file"
+                      onChange={(e) => setFile(e.target.files?.[0] || null)}
+                      className="product-form-upload-input"
+                    />
+                  </label>
+                  {file && (
+                    <p className="product-form-upload-filename">📎 {file.name}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="product-form-actions">
+              <button type="submit" className="product-form-btn-save" disabled={loading}>
+                {loading ? 'Đang lưu...' : '💾 Lưu sản phẩm'}
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push('/admin/products')}
+                className="product-form-btn-cancel"
+              >
+                ❌ Hủy bỏ
+              </button>
+            </div>
+          </div>
         </div>
       </form>
     </div>

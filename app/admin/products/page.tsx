@@ -2,23 +2,34 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { getProducts, deleteProduct } from '@/services/adminApi';
+import './products.css';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
-    getProducts()
-      .then((res) => {
-        setProducts(res.data || res);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    loadProducts();
   }, []);
 
+  const loadProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await getProducts();
+      setProducts(res.data || res);
+    } catch (error) {
+      console.error('Error loading products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDelete = async (id: number) => {
-    if (!confirm('Bạn có chắc muốn xóa?')) return;
+    if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
     try {
       await deleteProduct(id);
       setProducts(products.filter((p) => p.id !== id));
@@ -27,53 +38,126 @@ export default function AdminProductsPage() {
     }
   };
 
-  if (loading) return <div>Đang tải...</div>;
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.code?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) return (
+    <div className="products-loading-container">
+      <div className="products-loading-spinner"></div>
+      <p>Đang tải sản phẩm...</p>
+    </div>
+  );
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <h1>Quản lý sản phẩm</h1>
-        <Link href="/admin/products/create" style={{ background: '#4A865A', color: '#fff', padding: '8px 16px', textDecoration: 'none', borderRadius: '4px' }}>
-          + Thêm mới
+    <div className="products-container">
+      <div className="products-header">
+        <div>
+          <h1 className="products-title">📦 Quản lý sản phẩm</h1>
+          <p className="products-subtitle">Quản lý danh sách sản phẩm của cửa hàng</p>
+        </div>
+        <Link href="/admin/products/create" className="products-add-btn">
+          <span className="products-add-icon">+</span> Thêm mới
         </Link>
       </div>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ background: '#dedbce' }}>
-            <th style={{ padding: '8px', textAlign: 'left' }}>ID</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Tên</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Danh mục</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Giá</th>
-            <th style={{ padding: '8px', textAlign: 'left' }}>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.length === 0 ? (
+
+      <div className="products-toolbar">
+        <div className="products-search">
+          <span className="products-search-icon">🔍</span>
+          <input
+            type="text"
+            placeholder="Tìm kiếm sản phẩm..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="products-search-input"
+          />
+          {searchTerm && (
+            <button 
+              className="products-search-clear"
+              onClick={() => setSearchTerm('')}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        <div className="products-stats">
+          <span className="products-count">Tổng: {filteredProducts.length} sản phẩm</span>
+        </div>
+      </div>
+
+      <div className="products-table-wrapper">
+        <table className="products-table">
+          <thead>
             <tr>
-              <td colSpan={5} style={{ padding: '20px', textAlign: 'center' }}>Chưa có sản phẩm</td>
+              <th>ID</th>
+              <th>Tên sản phẩm</th>
+              <th>Danh mục</th>
+              <th>Giá</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
             </tr>
-          ) : (
-            products.map((p: any) => (
-              <tr key={p.id} style={{ borderBottom: '1px solid #eee' }}>
-                <td style={{ padding: '8px' }}>{p.id}</td>
-                <td style={{ padding: '8px' }}>{p.name}</td>
-                <td style={{ padding: '8px' }}>{p.category?.name || 'Chưa có'}</td>
-                <td style={{ padding: '8px' }}>{p.price?.toLocaleString() || 0} VND</td>
-                <td style={{ padding: '8px' }}>
-                  <Link href={`/admin/products/edit/${p.id}`} style={{ color: '#0070f3', textDecoration: 'none' }}>Sửa</Link>
-                  {' | '}
-                  <button
-                    onClick={() => handleDelete(p.id)}
-                    style={{ background: 'none', border: 'none', color: 'red', cursor: 'pointer' }}
-                  >
-                    Xóa
-                  </button>
+          </thead>
+          <tbody>
+            {filteredProducts.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="products-empty">
+                  <div className="products-empty-icon">🌱</div>
+                  <p>Chưa có sản phẩm nào</p>
+                  <Link href="/admin/products/create" className="products-empty-link">
+                    Thêm sản phẩm mới
+                  </Link>
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              filteredProducts.map((p: any) => (
+                <tr key={p.id}>
+                  <td className="products-id">#{p.id}</td>
+                  <td>
+                    <div className="products-name">
+                      <div className="products-name-text">{p.name}</div>
+                      {p.code && <div className="products-code">{p.code}</div>}
+                    </div>
+                  </td>
+                  <td>
+                    <span className="products-category">
+                      {p.category?.name || 'Chưa phân loại'}
+                    </span>
+                  </td>
+                  <td className="products-price">
+                    {p.price?.toLocaleString() || 0}₫
+                  </td>
+                  <td>
+                    <span className={`products-status products-status-${p.is_active ? 'active' : 'inactive'}`}>
+                      {p.is_active ? '🟢 Hoạt động' : '🔴 Ngừng bán'}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="products-actions">
+                      <Link 
+                        href={`/admin/products/edit/${p.id}`} 
+                        className="products-btn-edit"
+                      >
+                        ✏️ Sửa
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(p.id)}
+                        className="products-btn-delete"
+                      >
+                        🗑️ Xóa
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="products-footer">
+        <p>🌿 © 2024 Cửa hàng cây cảnh - Quản lý sản phẩm</p>
+      </div>
     </div>
   );
 }
