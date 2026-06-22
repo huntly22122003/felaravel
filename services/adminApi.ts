@@ -117,3 +117,64 @@ export const updateProductOrder = async (ids: number[], orders: number[]) => {
   if (!res.ok) throw new Error('Failed to update order');
   return res.json();
 };
+
+// ===== Banners =====
+export const getBanners = async (params?: any) => {
+  const token = getToken();
+  const query = new URLSearchParams(params).toString();
+  const res = await fetch(`${API_BASE}/banners?${query}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch banners');
+  return res.json();
+};
+
+export const getBanner = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/banners/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch banner');
+  return res.json();
+};
+
+export const createBanner = async (data: FormData) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/banners`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: data,
+  });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw { response: { data: errorData }, message: errorData.message || 'Failed to create banner' };
+  }
+  return res.json();
+};
+
+export const updateBanner = async (id: number, data: FormData) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/banners/${id}`, {
+    method: 'POST',
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      'X-HTTP-Method-Override': 'PUT'
+    },
+    body: data,
+  });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw { response: { data: errorData }, message: errorData.message || 'Failed to update banner' };
+  }
+  return res.json();
+};
+
+export const deleteBanner = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/banners/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to delete banner');
+  return res.json();
+};
