@@ -701,3 +701,85 @@ export const deletePage = async (id: number) => {
   if (!res.ok) throw new Error('Failed to delete page');
   return res.json();
 };
+
+// ===== Orders =====
+export const getOrders = async (params?: any) => {
+  const token = getToken();
+  const query = new URLSearchParams(params || {}).toString();
+  const url = query ? `${API_BASE}/orders?${query}` : `${API_BASE}/orders`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch orders');
+  return res.json();
+};
+
+export const getOrder = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/orders/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch order');
+  return res.json();
+};
+
+export const createOrder = async (data: any) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/orders`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  const responseData = await res.json();
+
+  if (!res.ok) {
+    let errorMessage = responseData.message || 'Tạo đơn hàng thất bại';
+    if (responseData.errors) {
+      const errorDetails = Object.values(responseData.errors).flat().join(', ');
+      errorMessage = `${errorMessage}: ${errorDetails}`;
+    }
+    throw new Error(errorMessage);
+  }
+
+  return responseData;
+};
+
+export const updateOrderStatus = async (id: number, status: string) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/orders/${id}/status`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  const responseData = await res.json();
+
+  if (!res.ok) {
+    let errorMessage = responseData.message || 'Cập nhật trạng thái thất bại';
+    if (responseData.errors) {
+      const errorDetails = Object.values(responseData.errors).flat().join(', ');
+      errorMessage = `${errorMessage}: ${errorDetails}`;
+    }
+    throw new Error(errorMessage);
+  }
+
+  return responseData;
+};
+
+export const deleteOrder = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/orders/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to delete order');
+  return res.json();
+};
+
