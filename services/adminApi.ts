@@ -457,3 +457,84 @@ export const deleteGallery = async (id: number) => {
   if (!res.ok) throw new Error('Failed to delete gallery');
   return res.json();
 };
+
+// ===== Contacts =====
+export const getContacts = async (params?: any) => {
+  const token = getToken();
+  const query = new URLSearchParams(params || {}).toString();
+  const url = query ? `${API_BASE}/contacts?${query}` : `${API_BASE}/contacts`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch contacts');
+  return res.json();
+};
+
+export const getContact = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/contacts/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch contact');
+  return res.json();
+};
+
+export const createContact = async (data: any) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/contacts`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  const responseData = await res.json();
+
+  if (!res.ok) {
+    let errorMessage = responseData.message || 'Tạo liên hệ thất bại';
+    if (responseData.errors) {
+      const errorDetails = Object.values(responseData.errors).flat().join(', ');
+      errorMessage = `${errorMessage}: ${errorDetails}`;
+    }
+    throw new Error(errorMessage);
+  }
+
+  return responseData;
+};
+
+export const updateContact = async (id: number, data: any) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/contacts/${id}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  const responseData = await res.json();
+
+  if (!res.ok) {
+    let errorMessage = responseData.message || 'Cập nhật liên hệ thất bại';
+    if (responseData.errors) {
+      const errorDetails = Object.values(responseData.errors).flat().join(', ');
+      errorMessage = `${errorMessage}: ${errorDetails}`;
+    }
+    throw new Error(errorMessage);
+  }
+
+  return responseData;
+};
+
+export const deleteContact = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/contacts/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to delete contact');
+  return res.json();
+};
