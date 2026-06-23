@@ -538,3 +538,84 @@ export const deleteContact = async (id: number) => {
   if (!res.ok) throw new Error('Failed to delete contact');
   return res.json();
 };
+
+// ===== FAQs =====
+export const getFaqs = async (params?: any) => {
+  const token = getToken();
+  const query = new URLSearchParams(params || {}).toString();
+  const url = query ? `${API_BASE}/faqs?${query}` : `${API_BASE}/faqs`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch faqs');
+  return res.json();
+};
+
+export const getFaq = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/faqs/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch faq');
+  return res.json();
+};
+
+export const createFaq = async (data: any) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/faqs`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  const responseData = await res.json();
+
+  if (!res.ok) {
+    let errorMessage = responseData.message || 'Tạo câu hỏi thất bại';
+    if (responseData.errors) {
+      const errorDetails = Object.values(responseData.errors).flat().join(', ');
+      errorMessage = `${errorMessage}: ${errorDetails}`;
+    }
+    throw new Error(errorMessage);
+  }
+
+  return responseData;
+};
+
+export const updateFaq = async (id: number, data: any) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/faqs/${id}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  const responseData = await res.json();
+
+  if (!res.ok) {
+    let errorMessage = responseData.message || 'Cập nhật câu hỏi thất bại';
+    if (responseData.errors) {
+      const errorDetails = Object.values(responseData.errors).flat().join(', ');
+      errorMessage = `${errorMessage}: ${errorDetails}`;
+    }
+    throw new Error(errorMessage);
+  }
+
+  return responseData;
+};
+
+export const deleteFaq = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/faqs/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to delete faq');
+  return res.json();
+};

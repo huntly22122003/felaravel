@@ -16,7 +16,7 @@ interface Stats {
   contacts: number;
   introductions: number;
   productPosts: number;
-  feedbacks: number;
+  faqs: number; // ✅ sửa feedbacks → faqs
 }
 
 export default function AdminDashboard() {
@@ -33,7 +33,7 @@ export default function AdminDashboard() {
     contacts: 0,
     introductions: 0,
     productPosts: 0,
-    feedbacks: 0,
+    faqs: 0, // ✅ sửa feedbacks → faqs
   });
   const router = useRouter();
 
@@ -65,9 +65,9 @@ export default function AdminDashboard() {
           galleries: 32,
           orders: 78,
           contacts: 19,
-          introductions: 1,   // thường chỉ có 1 trang giới thiệu
-          productPosts: 23,   // sản phẩm đang đăng tin
-          feedbacks: 7,
+          introductions: 1,
+          productPosts: 23,
+          faqs: 7, // ✅ sửa feedbacks → faqs
         });
       } catch (error) {
         console.error('Failed to fetch stats:', error);
@@ -106,7 +106,8 @@ export default function AdminDashboard() {
     { key: 'contacts', label: 'Liên hệ (KH)', icon: '📞', path: '/admin/contacts', color: '#3F51B5' },
     { key: 'introductions', label: 'Lời giới thiệu', icon: '📝', path: '/admin/introductions', color: '#607D8B' },
     { key: 'productPosts', label: 'SP đang đăng tin', icon: '📢', path: '/admin/product-posts', color: '#8BC34A' },
-    { key: 'feedbacks', label: 'QL liên hệ (phản hồi)', icon: '💬', path: '/admin/feedbacks', color: '#FF5722' },
+    // ✅ sửa thành FAQ
+    { key: 'faqs', label: 'FAQ', icon: '❓', path: '/admin/faqs', color: '#FF5722' },
   ];
 
   return (
