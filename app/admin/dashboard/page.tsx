@@ -4,193 +4,199 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import './admin-dashboard.css';
 
+// Interface cho thống kê (có thể gọi API sau)
+interface Stats {
+  users: number;
+  products: number;
+  categories: number;
+  banners: number;
+  posts: number;
+  galleries: number;
+  orders: number;
+  contacts: number;
+  introductions: number;
+  productPosts: number;
+  faqs: number; // ✅ sửa feedbacks → faqs
+}
+
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
+
+
+  const [stats, setStats] = useState<Stats>({
+    users: 0,
+    products: 0,
+    categories: 0,
+    banners: 0,
+    posts: 0,
+    galleries: 0,
+    orders: 0,
+    contacts: 0,
+    introductions: 0,
+    productPosts: 0,
+    faqs: 0, // ✅ sửa feedbacks → faqs
+  });
+  const router = useRouter();
+
 
   useEffect(() => {
     // Simulate loading data
     setTimeout(() => setLoading(false), 500);
   }, []);
 
-  if (loading) {
-    return (
-      <div className="dashboard-loading-container">
-        <div className="dashboard-loading-spinner"></div>
-        <p>Đang tải dữ liệu...</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const userStr = localStorage.getItem('admin_user');
+    if (userStr) {
+      setUser(JSON.parse(userStr));
+    }
+
+    // Giả lập lấy thống kê (bạn sẽ thay bằng API thật)
+    const fetchStats = async () => {
+      try {
+        // Gọi API lấy số lượng từng bảng
+        // const res = await getAdminStats();
+        // setStats(res.data);
+        // Tạm thời để số ngẫu nhiên cho demo
+        setStats({
+          users: 24,
+          products: 156,
+          categories: 12,
+          banners: 8,
+          posts: 45,
+          galleries: 32,
+          orders: 78,
+          contacts: 19,
+          introductions: 1,
+          productPosts: 23,
+          faqs: 7, // ✅ sửa feedbacks → faqs
+        });
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      }
+    };
+    fetchStats();
+
+    setLoading(false);
+  }, [router]);
+
+  const handleLogout = async () => {
+    if (!confirm('Bạn có chắc muốn đăng xuất?')) return;
+    try {
+      await logoutAdmin();
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
+      document.cookie = 'admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      router.push('/admin/login');
+    }
+  };
+
+  if (loading) return <div style={{ padding: '20px', textAlign: 'center' }}>⏳ Đang tải...</div>;
+
+  // Danh sách các module (đầy đủ)
+  const modules = [
+    { key: 'users', label: 'Người dùng', icon: '👤', path: '/admin/users', color: '#4CAF50' },
+    { key: 'products', label: 'Sản phẩm', icon: '📦', path: '/admin/products', color: '#2196F3' },
+    { key: 'categories', label: 'Danh mục', icon: '📂', path: '/admin/categories', color: '#FF9800' },
+    { key: 'banners', label: 'Banner quảng cáo', icon: '🖼️', path: '/admin/banners', color: '#E91E63' },
+    { key: 'posts', label: 'Tin tức', icon: '📰', path: '/admin/posts', color: '#9C27B0' },
+    { key: 'galleries', label: 'Thư viện ảnh', icon: '🖼️', path: '/admin/galleries', color: '#00BCD4' },
+    { key: 'orders', label: 'Đơn hàng', icon: '🛒', path: '/admin/orders', color: '#F44336' },
+    { key: 'contacts', label: 'Liên hệ (KH)', icon: '📞', path: '/admin/contacts', color: '#3F51B5' },
+    { key: 'introductions', label: 'Lời giới thiệu', icon: '📝', path: '/admin/introductions', color: '#607D8B' },
+    { key: 'productPosts', label: 'SP đang đăng tin', icon: '📢', path: '/admin/product-posts', color: '#8BC34A' },
+    // ✅ sửa thành FAQ
+    { key: 'faqs', label: 'FAQ', icon: '❓', path: '/admin/faqs', color: '#FF5722' },
+  ];
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
+    <div style={{ padding: '20px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+      {/* Header */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        background: 'white',
+        padding: '16px 24px',
+        borderRadius: '8px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        marginBottom: '24px',
+      }}>
         <div>
-          <h1 className="dashboard-title">🌿 Dashboard</h1>
-          <p className="dashboard-subtitle">Quản lý cửa hàng cây cảnh của bạn</p>
+          <h1 style={{ margin: 0, fontSize: '24px' }}>📊 Dashboard</h1>
+          <p style={{ margin: '4px 0 0', color: '#666' }}>
+            Xin chào, <strong>{user?.name || user?.username || 'Admin'}</strong>!
+          </p>
         </div>
-        <div className="dashboard-header-right">
-          <span className="dashboard-date">
-            {new Date().toLocaleDateString('vi-VN', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
-          </span>
-          <button className="dashboard-notification">🔔</button>
-        </div>
+        <button
+          onClick={handleLogout}
+          style={{
+            background: '#f44336',
+            color: '#fff',
+            border: 'none',
+            padding: '10px 20px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 'bold',
+          }}
+        >
+          🚪 Đăng xuất
+        </button>
       </div>
 
-      <div className="dashboard-stats">
-        <div className="dashboard-stat-card">
-          <div className="dashboard-stat-icon">🌱</div>
-          <div className="dashboard-stat-info">
-            <p className="dashboard-stat-label">Tổng cây cảnh</p>
-            <p className="dashboard-stat-value">1,234</p>
-            <p className="dashboard-stat-change dashboard-stat-up">↑ 12.5% so với tháng trước</p>
-          </div>
-        </div>
-        <div className="dashboard-stat-card">
-          <div className="dashboard-stat-icon">🪴</div>
-          <div className="dashboard-stat-info">
-            <p className="dashboard-stat-label">Đơn hàng</p>
-            <p className="dashboard-stat-value">567</p>
-            <p className="dashboard-stat-change dashboard-stat-up">↑ 8.3% so với tháng trước</p>
-          </div>
-        </div>
-        <div className="dashboard-stat-card">
-          <div className="dashboard-stat-icon">👤</div>
-          <div className="dashboard-stat-info">
-            <p className="dashboard-stat-label">Khách hàng</p>
-            <p className="dashboard-stat-value">2,345</p>
-            <p className="dashboard-stat-change dashboard-stat-up">↑ 15.2% so với tháng trước</p>
-          </div>
-        </div>
-        <div className="dashboard-stat-card">
-          <div className="dashboard-stat-icon">🏷️</div>
-          <div className="dashboard-stat-info">
-            <p className="dashboard-stat-label">Danh mục</p>
-            <p className="dashboard-stat-value">48</p>
-            <p className="dashboard-stat-change dashboard-stat-up">↑ 5.3% so với tháng trước</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="dashboard-charts">
-        <div className="dashboard-chart-card">
-          <h3 className="dashboard-chart-title">📊 Doanh thu theo ngày</h3>
-          <div className="dashboard-chart-bars">
-            {['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'].map((day, index) => {
-              const heights = [70, 50, 85, 65, 90, 45, 75];
-              return (
-                <div key={day} className="dashboard-bar">
-                  <div 
-                    className="dashboard-bar-fill" 
-                    style={{ height: `${heights[index]}%` }}
-                  ></div>
-                  <span className="dashboard-bar-label">{day}</span>
+      {/* Grid các module */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+        gap: '20px',
+      }}>
+        {modules.map((mod) => (
+          <a
+            key={mod.key}
+            href={mod.path}
+            style={{
+              display: 'block',
+              background: 'white',
+              padding: '20px',
+              borderRadius: '12px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+              textDecoration: 'none',
+              color: '#333',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              borderLeft: `6px solid ${mod.color}`,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '28px' }}>{mod.icon}</span>
+              <div>
+                <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                  {stats[mod.key as keyof Stats] ?? 0}
                 </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="dashboard-chart-card">
-          <h3 className="dashboard-chart-title">🔄 Hoạt động gần đây</h3>
-          <div className="dashboard-activity">
-            <div className="dashboard-activity-item">
-              <span className="dashboard-dot dashboard-dot-green"></span>
-              <div>
-                <p className="dashboard-activity-text">🌿 Cây phong thủy mới đã được thêm</p>
-                <span className="dashboard-activity-time">5 phút trước</span>
+                <div style={{ fontSize: '14px', color: '#666' }}>{mod.label}</div>
               </div>
             </div>
-            <div className="dashboard-activity-item">
-              <span className="dashboard-dot dashboard-dot-blue"></span>
-              <div>
-                <p className="dashboard-activity-text">🪴 Đơn hàng #12345 đã được xác nhận</p>
-                <span className="dashboard-activity-time">15 phút trước</span>
-              </div>
+            <div style={{ marginTop: '12px', fontSize: '13px', color: '#999' }}>
+              Xem chi tiết →
             </div>
-            <div className="dashboard-activity-item">
-              <span className="dashboard-dot dashboard-dot-yellow"></span>
-              <div>
-                <p className="dashboard-activity-text">🌱 Khách hàng mới: Nguyễn Văn A vừa đăng ký</p>
-                <span className="dashboard-activity-time">1 giờ trước</span>
-              </div>
-            </div>
-            <div className="dashboard-activity-item">
-              <span className="dashboard-dot dashboard-dot-red"></span>
-              <div>
-                <p className="dashboard-activity-text">🍃 Đơn hàng #12340 đã bị hủy</p>
-                <span className="dashboard-activity-time">2 giờ trước</span>
-              </div>
-            </div>
-          </div>
-        </div>
+          </a>
+        ))}
       </div>
 
-      <div className="dashboard-table">
-        <div className="dashboard-table-header">
-          <h3 className="dashboard-table-title">🌿 Đơn hàng gần đây</h3>
-          <Link href="/admin/orders" className="dashboard-table-link">Xem tất cả →</Link>
-        </div>
-        <div className="dashboard-table-responsive">
-          <table className="dashboard-table-content">
-            <thead>
-              <tr>
-                <th>Mã đơn</th>
-                <th>Khách hàng</th>
-                <th>Sản phẩm</th>
-                <th>Tổng tiền</th>
-                <th>Trạng thái</th>
-                <th>Ngày đặt</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>#12345</td>
-                <td>Nguyễn Văn A</td>
-                <td>Cây Kim Ngân</td>
-                <td>250,000₫</td>
-                <td><span className="dashboard-status dashboard-status-success">Đã xác nhận</span></td>
-                <td>22/06/2026</td>
-              </tr>
-              <tr>
-                <td>#12344</td>
-                <td>Trần Thị B</td>
-                <td>Sen đá mini</td>
-                <td>350,000₫</td>
-                <td><span className="dashboard-status dashboard-status-warning">Đang xử lý</span></td>
-                <td>22/06/2026</td>
-              </tr>
-              <tr>
-                <td>#12343</td>
-                <td>Lê Văn C</td>
-                <td>Cây Lưỡi Hổ</td>
-                <td>550,000₫</td>
-                <td><span className="dashboard-status dashboard-status-success">Đã giao hàng</span></td>
-                <td>21/06/2026</td>
-              </tr>
-              <tr>
-                <td>#12342</td>
-                <td>Phạm Thị D</td>
-                <td>Cây Trầu Bà</td>
-                <td>450,000₫</td>
-                <td><span className="dashboard-status dashboard-status-danger">Đã hủy</span></td>
-                <td>21/06/2026</td>
-              </tr>
-              <tr>
-                <td>#12341</td>
-                <td>Hoàng Văn E</td>
-                <td>Cây Xương Rồng</td>
-                <td>650,000₫</td>
-                <td><span className="dashboard-status dashboard-status-info">Đang vận chuyển</span></td>
-                <td>20/06/2026</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      {/* Footer thông tin thêm (tuỳ chọn) */}
+      <div style={{ marginTop: '32px', textAlign: 'center', color: '#aaa', fontSize: '13px' }}>
+        © {new Date().getFullYear()} - Quản trị hệ thống
+
       </div>
 
       <div className="dashboard-footer">
