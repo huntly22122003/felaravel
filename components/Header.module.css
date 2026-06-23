@@ -1,0 +1,463 @@
+/* ==================== HEADER STYLES - MODERN & SMOOTH ==================== */
+.header {
+  width: 100%;
+  background: #ffffff;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+  border-bottom: 2px solid #f0f5ee;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Top bar */
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 40px;
+  gap: 20px;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.logo {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+  transition: color 0.3s ease;
+}
+
+.logo:hover {
+  color: #1a3a24;
+}
+
+.logo span {
+  color: #2d5a3a;
+  transition: color 0.3s ease;
+}
+
+.logo:hover span {
+  color: #3a7a4a;
+}
+
+.slogan {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 400;
+  padding-left: 12px;
+  border-left: 2px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+/* Search section */
+.searchSection {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  max-width: 500px;
+  min-width: 200px;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 10px 18px;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #1a1a1a;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: #2d5a3a;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(45, 90, 58, 0.08);
+  transform: scale(1.01);
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+  transition: opacity 0.3s ease;
+}
+
+.searchInput:focus::placeholder {
+  opacity: 0.5;
+}
+
+.searchButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #2d5a3a, #1a3a24);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.searchButton:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(45, 90, 58, 0.25);
+}
+
+.searchButton:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.searchButton svg {
+  flex-shrink: 0;
+}
+
+/* Header actions */
+.headerActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.iconButton {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.iconButton:hover {
+  background: #f0f5ee;
+  border-color: #2d5a3a;
+  color: #2d5a3a;
+  transform: translateY(-2px);
+}
+
+.iconButton:active {
+  transform: translateY(0) scale(0.95);
+}
+
+/* Admin Login Button */
+.adminLoginButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, #2d5a3a, #1a3a24);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.adminLoginButton:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(45, 90, 58, 0.3);
+  background: linear-gradient(135deg, #3a7a4a, #2d5a3a);
+}
+
+.adminLoginButton:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.adminLoginButton svg {
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+/* Navigation menu - SMOOTH */
+.menu {
+  display: flex;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+  border-top: 1px solid #f3f4f6;
+  gap: 2px;
+}
+
+.menuItem {
+  position: relative;
+  padding: 14px 22px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+}
+
+.menuItem:hover {
+  background: rgba(45, 90, 58, 0.05);
+}
+
+.menuItemActive {
+  background: rgba(45, 90, 58, 0.08);
+}
+
+.menuLink {
+  color: #374151;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.menuItem:hover .menuLink {
+  color: #2d5a3a;
+}
+
+/* Gạch chân mượt mà */
+.menuItem::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2d5a3a, #4a9b60);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%);
+  border-radius: 3px 3px 0 0;
+  opacity: 0;
+}
+
+.menuItem:hover::after {
+  width: 80%;
+  opacity: 1;
+}
+
+.menuItemActive::after {
+  width: 80%;
+  opacity: 1;
+}
+
+.menuIcon {
+  font-size: 16px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menuItem:hover .menuIcon {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+/* Dropdown - SMOOTH */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: #ffffff;
+  min-width: 220px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 6px 0;
+  border: 1px solid #f3f4f6;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.98);
+  animation: dropdownIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: top left;
+}
+
+@keyframes dropdownIn {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.menuItem:hover .dropdown {
+  animation: dropdownIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.dropdownItem {
+  display: block;
+  padding: 10px 20px;
+  color: #374151;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  border-left: 3px solid transparent;
+}
+
+.dropdownItem:hover {
+  background: #f9fafb;
+  color: #2d5a3a;
+  padding-left: 26px;
+  border-left-color: #2d5a3a;
+}
+
+.dropdownItem:first-child {
+  border-radius: 12px 12px 0 0;
+}
+
+.dropdownItem:last-child {
+  border-radius: 0 0 12px 12px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .topBar {
+    padding: 14px 20px;
+  }
+  
+  .menu {
+    padding: 0 20px;
+  }
+  
+  .searchSection {
+    max-width: 300px;
+    min-width: 150px;
+  }
+  
+  .adminLoginButton span {
+    display: none;
+  }
+  
+  .adminLoginButton {
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .topBar {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+  
+  .logoSection {
+    flex: 1;
+  }
+  
+  .logo {
+    font-size: 24px;
+  }
+  
+  .slogan {
+    display: none;
+  }
+  
+  .searchSection {
+    order: 3;
+    max-width: 100%;
+    flex-basis: 100%;
+    min-width: unset;
+  }
+  
+  .headerActions {
+    order: 2;
+  }
+  
+  .menu {
+    overflow-x: auto;
+    padding: 0 12px;
+    gap: 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .menu::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .menuItem {
+    padding: 12px 16px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .menuLink {
+    font-size: 13px;
+  }
+  
+  .adminLoginButton span {
+    display: inline;
+  }
+}
+
+@media (max-width: 480px) {
+  .topBar {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  
+  .logo {
+    font-size: 20px;
+  }
+  
+  .searchButton span {
+    display: none;
+  }
+  
+  .searchButton {
+    padding: 10px 14px;
+  }
+  
+  .menuItem {
+    padding: 10px 12px;
+  }
+  
+  .menuLink {
+    font-size: 12px;
+    gap: 4px;
+  }
+  
+  .menuIcon {
+    font-size: 14px;
+  }
+  
+  .adminLoginButton span {
+    display: none;
+  }
+  
+  .adminLoginButton {
+    padding: 8px 12px;
+  }
+  
+  .iconButton {
+    width: 36px;
+    height: 36px;
+  }
+}
