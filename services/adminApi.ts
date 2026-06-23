@@ -308,3 +308,74 @@ export const deleteUser = async (id: number) => {
   if (!res.ok) throw new Error('Failed to delete user');
   return res.json();
 };
+
+// ============================================
+// ===== POSTS (Tin tức) =====
+// ============================================
+
+export const getPosts = async (params?: any) => {
+  const token = getToken();
+  const query = new URLSearchParams(params || {}).toString();
+  const url = query ? `${API_BASE}/posts?${query}` : `${API_BASE}/posts`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch posts');
+  return res.json();
+};
+
+export const getPost = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/posts/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch post');
+  return res.json();
+};
+
+export const createPost = async (data: FormData) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/posts`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: data,
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ message: 'Unknown error' }));
+    throw { response: { data: errorData }, message: errorData.message || 'Failed to create post' };
+  }
+  // Nếu response ok, nhưng body rỗng hoặc không parse được
+  try {
+    const json = await res.json();
+    return json;
+  } catch (e) {
+    throw new Error('Response không hợp lệ (không phải JSON)');
+  }
+};
+
+export const updatePost = async (id: number, data: FormData) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/posts/${id}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'X-HTTP-Method-Override': 'PUT',
+    },
+    body: data,
+  });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw { response: { data: errorData }, message: errorData.message || 'Failed to update post' };
+  }
+  return res.json();
+};
+
+export const deletePost = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/posts/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to delete post');
+  return res.json();
+};
