@@ -379,3 +379,81 @@ export const deletePost = async (id: number) => {
   if (!res.ok) throw new Error('Failed to delete post');
   return res.json();
 };
+
+// ===== Galleries =====
+export const getGalleries = async (params?: any) => {
+  const token = getToken();
+  const query = new URLSearchParams(params || {}).toString();
+  const url = query ? `${API_BASE}/galleries?${query}` : `${API_BASE}/galleries`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch galleries');
+  return res.json();
+};
+
+export const getGallery = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/galleries/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch gallery');
+  return res.json();
+};
+
+export const createGallery = async (data: FormData) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/galleries`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: data,
+  });
+
+  const responseData = await res.json();
+
+  if (!res.ok) {
+    let errorMessage = responseData.message || 'Tạo ảnh thất bại';
+    if (responseData.errors) {
+      const errorDetails = Object.values(responseData.errors).flat().join(', ');
+      errorMessage = `${errorMessage}: ${errorDetails}`;
+    }
+    throw new Error(errorMessage);
+  }
+
+  return responseData;
+};
+
+export const updateGallery = async (id: number, data: FormData) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/galleries/${id}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'X-HTTP-Method-Override': 'PUT',
+    },
+    body: data,
+  });
+
+  const responseData = await res.json();
+
+  if (!res.ok) {
+    let errorMessage = responseData.message || 'Cập nhật ảnh thất bại';
+    if (responseData.errors) {
+      const errorDetails = Object.values(responseData.errors).flat().join(', ');
+      errorMessage = `${errorMessage}: ${errorDetails}`;
+    }
+    throw new Error(errorMessage);
+  }
+
+  return responseData;
+};
+
+export const deleteGallery = async (id: number) => {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/galleries/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to delete gallery');
+  return res.json();
+};
