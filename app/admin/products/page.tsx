@@ -57,6 +57,7 @@ export default function AdminProductsPage() {
           <h1 className="products-title">📦 Quản lý sản phẩm</h1>
           <p className="products-subtitle">Quản lý danh sách sản phẩm của cửa hàng</p>
         </div>
+        {/* SPA Navigation - Link của Next.js */}
         <Link href="/admin/products/create" className="products-add-btn">
           <span className="products-add-icon">+</span> Thêm mới
         </Link>
@@ -134,6 +135,7 @@ export default function AdminProductsPage() {
                   </td>
                   <td>
                     <div className="products-actions">
+                      {/* SPA Navigation - Link của Next.js */}
                       <Link 
                         href={`/admin/products/edit/${p.id}`} 
                         className="products-btn-edit"

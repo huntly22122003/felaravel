@@ -1,8 +1,11 @@
+// app/admin/orders/create/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { getProducts, createOrder } from '@/services/adminApi';
+import './create-order.css';
 
 interface OrderItem {
   product_id: number | null;
@@ -56,7 +59,6 @@ export default function CreateOrderPage() {
     setItems(items.filter((_, i) => i !== index));
   };
 
-  // ✅ Sửa hàm updateItem an toàn, không dùng newItems[index][field] = value
   const updateItem = (index: number, field: keyof OrderItem, value: any) => {
     const newItems = [...items];
     if (field === 'product_id') {
@@ -108,148 +110,187 @@ export default function CreateOrderPage() {
     }
   };
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(price);
+  };
+
   return (
-    <div style={{ padding: '20px', maxWidth: '900px', margin: '0 auto' }}>
-      <h1 style={{ marginBottom: '20px' }}>Tạo đơn hàng mới</h1>
-
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Khách hàng</label>
-          <select
-            value={customerId}
-            onChange={(e) => setCustomerId(e.target.value)}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-          >
-            <option value="">Khách lẻ</option>
-            {customers.map((customer: any) => (
-              <option key={customer.id} value={customer.id}>
-                {customer.name} {customer.email ? `(${customer.email})` : ''}
-              </option>
-            ))}
-          </select>
+    <div className="order-create-container">
+      {/* Header */}
+      <div className="order-create-header">
+        <div className="order-create-header-left">
+          <h1 className="order-create-title">
+            <span className="order-create-title-icon">➕</span>
+            Tạo đơn hàng mới
+          </h1>
+          <p className="order-create-subtitle">Nhập thông tin đơn hàng và sản phẩm</p>
         </div>
+        <Link href="/admin/orders" className="order-create-back-btn">
+          <svg className="back-btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span className="back-btn-text">Quay lại</span>
+        </Link>
+      </div>
 
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Trạng thái</label>
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-          >
-            <option value="new">Mới</option>
-            <option value="processing">Đang xử lý</option>
-            <option value="completed">Hoàn thành</option>
-            <option value="cancelled">Đã hủy</option>
-          </select>
-        </div>
+      {/* Form */}
+      <div className="order-create-form-wrapper">
+        <form onSubmit={handleSubmit} className="order-create-form">
+          {/* Customer */}
+          <div className="order-create-form-group">
+            <label className="order-create-label">Khách hàng</label>
+            <select
+              value={customerId}
+              onChange={(e) => setCustomerId(e.target.value)}
+              className="order-create-select"
+            >
+              <option value="">Khách lẻ</option>
+              {customers.map((customer: any) => (
+                <option key={customer.id} value={customer.id}>
+                  {customer.name} {customer.email ? `(${customer.email})` : ''}
+                </option>
+              ))}
+            </select>
+            <p className="order-create-hint">Chọn khách hàng hoặc để trống cho khách lẻ</p>
+          </div>
 
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Sản phẩm</label>
-          {items.map((item, index) => (
-            <div key={index} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <select
-                value={item.product_id || ''}
-                onChange={(e) => updateItem(index, 'product_id', e.target.value)}
-                style={{ flex: '1', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', minWidth: '150px' }}
-              >
-                <option value="">Chọn sản phẩm</option>
-                {products.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
-              <input
-                type="text"
-                placeholder="Tên sản phẩm"
-                value={item.product_name}
-                onChange={(e) => updateItem(index, 'product_name', e.target.value)}
-                style={{ flex: '1', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', minWidth: '120px' }}
-                required
-              />
-              <input
-                type="number"
-                placeholder="SL"
-                value={item.quantity}
-                onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value) || 0)}
-                style={{ width: '80px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-                min="1"
-                required
-              />
-              <input
-                type="number"
-                placeholder="Giá"
-                value={item.price}
-                onChange={(e) => updateItem(index, 'price', parseFloat(e.target.value) || 0)}
-                style={{ width: '120px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-                min="0"
-                step="1000"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => removeItem(index)}
-                style={{ padding: '6px 12px', background: '#f44336', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                disabled={items.length === 1}
-              >
-                ×
-              </button>
+          {/* Status */}
+          <div className="order-create-form-group">
+            <label className="order-create-label">Trạng thái</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="order-create-select"
+            >
+              <option value="new">🆕 Mới</option>
+              <option value="processing">⚙️ Đang xử lý</option>
+              <option value="completed">✅ Hoàn thành</option>
+              <option value="cancelled">❌ Đã hủy</option>
+            </select>
+          </div>
+
+          {/* Products */}
+          <div className="order-create-form-group">
+            <label className="order-create-label">Sản phẩm</label>
+            <div className="order-create-items">
+              {items.map((item, index) => (
+                <div key={index} className="order-create-item">
+                  <select
+                    value={item.product_id || ''}
+                    onChange={(e) => updateItem(index, 'product_id', e.target.value)}
+                    className="order-create-item-input"
+                  >
+                    <option value="">Chọn sản phẩm</option>
+                    {products.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="Tên sản phẩm"
+                    value={item.product_name}
+                    onChange={(e) => updateItem(index, 'product_name', e.target.value)}
+                    className="order-create-item-input"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="SL"
+                    value={item.quantity}
+                    onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value) || 0)}
+                    className="order-create-item-input"
+                    min="1"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Giá"
+                    value={item.price}
+                    onChange={(e) => updateItem(index, 'price', parseFloat(e.target.value) || 0)}
+                    className="order-create-item-input"
+                    min="0"
+                    step="1000"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeItem(index)}
+                    className="order-create-item-remove"
+                    disabled={items.length === 1}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
-          <button
-            type="button"
-            onClick={addItem}
-            style={{ padding: '8px 16px', background: '#4CAF50', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-          >
-            + Thêm sản phẩm
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={addItem}
+              className="order-create-add-btn"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Thêm sản phẩm
+            </button>
+          </div>
 
-        <div style={{ marginBottom: '16px', fontSize: '18px', fontWeight: 'bold', textAlign: 'right' }}>
-          Tổng tiền: {total.toLocaleString('vi-VN')} ₫
-        </div>
+          {/* Total */}
+          <div className="order-create-total">
+            <span className="order-create-total-label">Tổng tiền:</span>
+            <span className="order-create-total-value">{formatPrice(total)}</span>
+          </div>
 
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Ghi chú</label>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            rows={3}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-          />
-        </div>
+          {/* Note */}
+          <div className="order-create-form-group">
+            <label className="order-create-label">Ghi chú</label>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              rows={3}
+              className="order-create-textarea"
+              placeholder="Nhập ghi chú cho đơn hàng..."
+            />
+          </div>
 
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              padding: '10px 24px',
-              background: '#2196F3',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '16px',
-            }}
-          >
-            {loading ? 'Đang xử lý...' : 'Tạo đơn hàng'}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.back()}
-            style={{
-              padding: '10px 24px',
-              background: '#999',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '16px',
-            }}
-          >
-            Hủy
-          </button>
-        </div>
-      </form>
+          {/* Actions */}
+          <div className="order-create-actions">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="order-create-btn-cancel"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+              Hủy bỏ
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="order-create-btn-submit"
+            >
+              {loading ? (
+                <>
+                  <span className="order-create-spinner"></span>
+                  Đang xử lý...
+                </>
+              ) : (
+                <>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"/>
+                    <polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/>
+                  </svg>
+                  Tạo đơn hàng
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createProduct, updateProduct, getProduct } from '@/services/adminApi';
-import './product-form.css'; // Sửa lại import
+import { createProduct, getCategories } from '@/services/adminApi';
+import './product-form.css';
 
 export default function ProductForm({ params }: { params?: { id: string } }) {
   const router = useRouter();
@@ -21,11 +21,23 @@ export default function ProductForm({ params }: { params?: { id: string } }) {
     is_featured: false,
     sort_order: 0,
   });
+  const [categories, setCategories] = useState<any[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
+  // Load categories khi component mount
   useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data || []);
+      } catch (err) {
+        console.error('Error loading categories:', err);
+      }
+    };
+    loadCategories();
+
     if (isEdit) {
       loadProduct();
     }
@@ -34,6 +46,7 @@ export default function ProductForm({ params }: { params?: { id: string } }) {
   const loadProduct = async () => {
     setLoading(true);
     try {
+      const { getProduct } = await import('@/services/adminApi');
       const data = await getProduct(parseInt(params!.id!));
       setForm({
         name: data.name,
@@ -61,7 +74,7 @@ export default function ProductForm({ params }: { params?: { id: string } }) {
 
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && key !== 'thumbnail_file') {
+      if (value !== undefined && value !== null) {
         if (typeof value === 'boolean') {
           formData.append(key, value ? '1' : '0');
         } else {
@@ -73,6 +86,7 @@ export default function ProductForm({ params }: { params?: { id: string } }) {
 
     try {
       if (isEdit) {
+        const { updateProduct } = await import('@/services/adminApi');
         await updateProduct(parseInt(params!.id), formData);
       } else {
         await createProduct(formData);
@@ -177,6 +191,11 @@ export default function ProductForm({ params }: { params?: { id: string } }) {
                   className="product-form-select"
                 >
                   <option value="">Chọn danh mục</option>
+                  {categories.map((cat: any) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.parent?.name ? `📁 ${cat.parent.name} → ` : ''}{cat.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 

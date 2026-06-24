@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { getProduct, updateProduct } from '@/services/adminApi';
+import { getProduct, updateProduct, getCategories } from '@/services/adminApi';
 import './edit-product.css';
 
 export default function EditProductPage() {
@@ -23,6 +23,7 @@ export default function EditProductPage() {
     is_featured: false,
     sort_order: 0,
   });
+  const [categories, setCategories] = useState<any[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -30,8 +31,13 @@ export default function EditProductPage() {
   const [success, setSuccess] = useState<string>('');
 
   useEffect(() => {
-    const loadProduct = async () => {
+    const loadData = async () => {
       try {
+        // Load categories trước
+        const categoriesData = await getCategories();
+        setCategories(categoriesData || []);
+
+        // Load product
         const data = await getProduct(id);
         setForm({
           name: data.name || '',
@@ -47,13 +53,13 @@ export default function EditProductPage() {
           sort_order: data.sort_order || 0,
         });
       } catch (err) {
-        setError('Lỗi tải sản phẩm. Vui lòng thử lại.');
-        console.error('Load product error:', err);
+        setError('Lỗi tải dữ liệu. Vui lòng thử lại.');
+        console.error('Load error:', err);
       } finally {
         setLoading(false);
       }
     };
-    loadProduct();
+    loadData();
   }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,7 +70,7 @@ export default function EditProductPage() {
 
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && key !== 'thumbnail_file' && key !== 'thumbnail') {
+      if (value !== undefined && value !== null && key !== 'thumbnail') {
         if (typeof value === 'boolean') {
           formData.append(key, value ? '1' : '0');
         } else {
@@ -182,7 +188,11 @@ export default function EditProductPage() {
                   className="edit-select"
                 >
                   <option value="">Chọn danh mục</option>
-                  {/* Gọi API lấy danh mục nếu cần */}
+                  {categories.map((cat: any) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.parent?.name ? `📁 ${cat.parent.name} → ` : ''}{cat.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 

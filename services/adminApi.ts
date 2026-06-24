@@ -863,3 +863,29 @@ export const deleteProductPost = async (id: number) => {
   if (!res.ok) throw new Error('Failed to delete product post');
   return res.json();
 };
+
+// ---- Public Products (Không cần token) ----
+export const getPublicProducts = async (params?: any) => {
+  const query = new URLSearchParams(params).toString();
+  const res = await fetch(`${API_BASE}/products?${query}`);
+  if (!res.ok) throw new Error('Failed to fetch products');
+  return res.json();
+};
+
+export const getPublicProduct = async (id: number) => {
+  const res = await fetch(`${API_BASE}/products/${id}`);
+  if (!res.ok) throw new Error('Failed to fetch product');
+  return res.json();
+};
+
+export const getNewProducts = async () => {
+  const res = await fetch(`${API_BASE}/products/new`);
+  if (!res.ok) throw new Error('Failed to fetch new products');
+  return res.json();
+};
+
+export const getFeaturedProducts = async () => {
+  const res = await fetch(`${API_BASE}/products/featured`);
+  if (!res.ok) throw new Error('Failed to fetch featured products');
+  return res.json();
+};

@@ -1,16 +1,63 @@
-/* ==================== MAIN CONTENT STYLES - MODERN ==================== */
+/* ==================== MAIN CONTENT STYLES - OPTIMIZED ==================== */
 .mainContent {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  will-change: transform;
 }
 
-/* Main Banner */
+/* Optimized scroll animation - sử dụng transform thay vì opacity+transform cùng lúc */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Chỉ animation khi load lần đầu, không dùng cho scroll */
+.mainContent > * {
+  opacity: 0;
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: transform, opacity;
+}
+
+.mainContent > *:nth-child(1) { animation-delay: 0.05s; }
+.mainContent > *:nth-child(2) { animation-delay: 0.1s; }
+.mainContent > *:nth-child(3) { animation-delay: 0.15s; }
+.mainContent > *:nth-child(4) { animation-delay: 0.2s; }
+.mainContent > *:nth-child(5) { animation-delay: 0.25s; }
+
+/* Intersection Observer - sử dụng sẽ-change và hardware acceleration */
+.sectionVisible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+.sectionHidden {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Main Banner - tối ưu hiệu suất */
 .mainBanner {
   position: relative;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.mainBanner:hover {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
 }
 
 .bannerImage {
@@ -18,12 +65,19 @@
   height: 350px;
   object-fit: cover;
   display: block;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.mainBanner:hover .bannerImage {
+  transform: scale(1.03);
 }
 
 .bannerOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, rgba(0,0,0,0.5), transparent);
+  background: linear-gradient(to right, rgba(0,0,0,0.6), transparent);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -36,6 +90,19 @@
   font-size: 36px;
   font-weight: 700;
   margin: 0 0 8px 0;
+  animation: slideInLeft 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform, opacity;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .bannerSub {
@@ -43,6 +110,9 @@
   font-size: 18px;
   opacity: 0.9;
   margin: 0 0 20px 0;
+  animation: slideInLeft 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s forwards;
+  opacity: 0;
+  will-change: transform, opacity;
 }
 
 .bannerButton {
@@ -55,16 +125,35 @@
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-size: 14px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   width: fit-content;
+  animation: slideInLeft 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
+  opacity: 0;
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.bannerButton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.bannerButton:hover::before {
+  transform: translateX(100%);
 }
 
 .bannerButton:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.03);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-/* Small Banners */
+/* Small Banners - tối ưu */
 .smallBanners {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -77,24 +166,42 @@
   overflow: hidden;
   background: #ffffff;
   border: 1px solid #f0f5ee;
-  transition: all 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.3s ease;
   cursor: pointer;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .smallBannerItem:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: #2d5a3a;
 }
 
 .smallBannerItem img {
   width: 100%;
   height: 150px;
   object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.smallBannerItem:hover img {
+  transform: scale(1.05);
 }
 
 .smallBannerContent {
   padding: 16px;
   text-align: center;
+  transition: background 0.3s ease;
+}
+
+.smallBannerItem:hover .smallBannerContent {
+  background: rgba(45, 90, 58, 0.02);
 }
 
 .smallBannerContent h4 {
@@ -102,6 +209,11 @@
   margin: 0 0 4px 0;
   color: #1a1a1a;
   font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.smallBannerItem:hover .smallBannerContent h4 {
+  color: #2d5a3a;
 }
 
 .smallBannerContent p {
@@ -111,7 +223,7 @@
   font-size: 13px;
 }
 
-/* News Section */
+/* News Section - tối ưu */
 .newsSection {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -124,6 +236,15 @@
   padding: 24px;
   border: 1px solid #f0f5ee;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.newsBox:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .newsTitle {
@@ -148,6 +269,7 @@
 
 .newsItem {
   padding: 0;
+  will-change: transform, opacity;
 }
 
 .newsLink {
@@ -158,11 +280,25 @@
   background: #f9fafb;
   border-radius: 8px;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
-.newsLink:hover {
-  background: #2d5a3a;
+.newsLink::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #2d5a3a, #4a9b60);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.newsLink:hover::before {
+  transform: scaleX(1);
 }
 
 .newsLinkTitle {
@@ -170,25 +306,31 @@
   font-size: 14px;
   color: #374151;
   font-weight: 500;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .newsLink:hover .newsLinkTitle {
   color: white;
+  transform: translateX(3px);
 }
 
 .newsLinkDate {
   font-family: 'Inter', sans-serif;
   font-size: 12px;
   color: #9ca3af;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .newsLink:hover .newsLinkDate {
-  color: rgba(255,255,255,0.7);
+  color: rgba(255,255,255,0.8);
+  transform: translateX(-3px);
 }
 
-/* News Banner */
+/* News Banner - tối ưu */
 .newsBanner {
   background: linear-gradient(135deg, #2d5a3a, #1a3a24);
   border-radius: 16px;
@@ -198,17 +340,59 @@
   justify-content: center;
   text-align: center;
   color: white;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.newsBanner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.05), transparent 70%);
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+.newsBanner:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(45, 90, 58, 0.25);
 }
 
 .newsBannerContent {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .newsBannerIcon {
   font-size: 48px;
   margin-bottom: 12px;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 .newsBannerContent h3 {
@@ -234,7 +418,24 @@
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-size: 14px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.newsBannerButton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.newsBannerButton:hover::before {
+  transform: translateX(100%);
 }
 
 .newsBannerButton:hover {
@@ -242,13 +443,16 @@
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 
-/* Products Section */
+/* Products Section - OPTIMIZED */
 .productsSection {
   background: #ffffff;
   border-radius: 16px;
   padding: 28px;
   border: 1px solid #f0f5ee;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s ease;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .productsHeader {
@@ -264,6 +468,9 @@
   font-weight: 600;
   color: #1a1a1a;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .productsViewAll {
@@ -272,11 +479,28 @@
   color: #2d5a3a;
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+.productsViewAll::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #2d5a3a;
+  transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.productsViewAll:hover::after {
+  width: 100%;
 }
 
 .productsViewAll:hover {
   color: #1a3a24;
+  transform: translateX(3px);
 }
 
 .productsGrid {
@@ -285,13 +509,34 @@
   gap: 20px;
 }
 
-/* Product Card */
+/* Product Card - OPTIMIZED */
 .productCard {
   background: #f9fafb;
   border-radius: 12px;
   padding: 16px;
-  transition: all 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              background 0.3s ease,
+              border-color 0.3s ease;
   border: 1px solid #f3f4f6;
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.productCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(45, 90, 58, 0.03), transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.productCard:hover::before {
+  opacity: 1;
 }
 
 .productCard:hover {
@@ -311,7 +556,9 @@
   width: 100%;
   height: 180px;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .productCard:hover .productImage {
@@ -322,13 +569,21 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #2d5a3a;
+  background: linear-gradient(135deg, #2d5a3a, #4a9b60);
   color: white;
   padding: 4px 12px;
   border-radius: 20px;
   font-family: 'Inter', sans-serif;
   font-size: 11px;
   font-weight: 600;
+  box-shadow: 0 2px 8px rgba(45, 90, 58, 0.3);
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.featuredBadge {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
 }
 
 .productName {
@@ -337,6 +592,18 @@
   font-weight: 500;
   color: #1a1a1a;
   margin: 12px 0 4px 0;
+  transition: color 0.3s ease;
+}
+
+.productCard:hover .productName {
+  color: #2d5a3a;
+}
+
+.productExtraName {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0 0 8px 0;
 }
 
 .productPrice {
@@ -345,11 +612,17 @@
   font-weight: 600;
   color: #2d5a3a;
   margin-bottom: 12px;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.productCard:hover .productPrice {
+  transform: scale(1.03);
 }
 
 .productButton {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   background: linear-gradient(135deg, #2d5a3a, #1a3a24);
   color: white;
   border: none;
@@ -358,12 +631,95 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.productButton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.productButton:hover::before {
+  transform: translateX(100%);
 }
 
 .productButton:hover {
-  transform: scale(1.02);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45, 90, 58, 0.3);
+  background: linear-gradient(135deg, #3a7a4a, #2d5a3a);
+}
+
+.productButton:active {
+  transform: scale(0.97);
+}
+
+/* Loading & Error States */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 16px;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f0f5ee;
+  border-top: 4px solid #2d5a3a;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  will-change: transform;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorContainer {
+  text-align: center;
+  padding: 40px;
+}
+
+.errorMessage {
+  color: #ef4444;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.retryButton {
+  padding: 10px 24px;
+  background: #2d5a3a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retryButton:hover {
+  transform: scale(1.05);
   box-shadow: 0 4px 16px rgba(45, 90, 58, 0.3);
+}
+
+.noProductsMessage {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Responsive */
@@ -418,6 +774,14 @@
   .productsSection {
     padding: 16px;
   }
+
+  .newsBannerContent h3 {
+    font-size: 20px;
+  }
+
+  .newsBannerIcon {
+    font-size: 36px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -427,9 +791,36 @@
   
   .productsGrid {
     grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
   
   .bannerTitle {
     font-size: 18px;
+  }
+
+  .bannerButton {
+    padding: 8px 20px;
+    font-size: 12px;
+  }
+
+  .productCard {
+    padding: 12px;
+  }
+
+  .productImage {
+    height: 120px;
+  }
+
+  .productName {
+    font-size: 13px;
+  }
+
+  .productPrice {
+    font-size: 15px;
+  }
+
+  .productButton {
+    font-size: 12px;
+    padding: 8px;
   }
 }

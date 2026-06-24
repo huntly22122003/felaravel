@@ -1,15 +1,17 @@
+// app/admin/orders/[id]/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { getOrder, updateOrderStatus } from '@/services/adminApi';
+import './order-detail.css';
 
-const statusMap: Record<string, { label: string; color: string }> = {
-  new: { label: 'Mới', color: '#2196F3' },
-  processing: { label: 'Đang xử lý', color: '#FF9800' },
-  completed: { label: 'Hoàn thành', color: '#4CAF50' },
-  cancelled: { label: 'Đã hủy', color: '#f44336' },
+const statusMap: Record<string, { label: string; color: string; bg: string }> = {
+  new: { label: 'Mới', color: '#2563eb', bg: '#eff6ff' },
+  processing: { label: 'Đang xử lý', color: '#ea580c', bg: '#fff7ed' },
+  completed: { label: 'Hoàn thành', color: '#16a34a', bg: '#f0fdf4' },
+  cancelled: { label: 'Đã hủy', color: '#dc2626', bg: '#fef2f2' },
 };
 
 const statusOptions = ['new', 'processing', 'completed', 'cancelled'];
@@ -54,109 +56,191 @@ export default function OrderDetailPage() {
     }
   };
 
-  if (loading) return <div style={{ padding: '20px' }}>Đang tải...</div>;
-  if (!order) return <div style={{ padding: '20px' }}>Không tìm thấy đơn hàng</div>;
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(price);
+  };
+
+  if (loading) {
+    return (
+      <div className="order-detail-container">
+        <div className="order-detail-loading">
+          <div className="order-detail-spinner"></div>
+          <p>Đang tải đơn hàng...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="order-detail-container">
+        <div className="order-detail-not-found">
+          <span className="not-found-icon">🔍</span>
+          <p>Không tìm thấy đơn hàng</p>
+          <Link href="/admin/orders" className="order-detail-back-link">
+            Quay lại danh sách
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1>Chi tiết đơn hàng #{order.id}</h1>
-        <Link href="/admin/orders">
-          <button style={{ padding: '8px 16px', background: '#999', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-            ← Quay lại
-          </button>
+    <div className="order-detail-container">
+      {/* Header */}
+      <div className="order-detail-header">
+        <div className="order-detail-header-left">
+          <h1 className="order-detail-title">
+            <span className="order-detail-title-icon">📋</span>
+            Chi tiết đơn hàng #{order.id}
+          </h1>
+          <p className="order-detail-subtitle">
+            Ngày tạo: {new Date(order.created_at).toLocaleString('vi-VN')}
+          </p>
+        </div>
+        <Link href="/admin/orders" className="order-detail-back-btn">
+          <svg className="back-btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span className="back-btn-text">Quay lại</span>
         </Link>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-        <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-          <h3>Thông tin đơn hàng</h3>
-          <p><strong>Khách hàng:</strong> {order.customer?.name || 'Khách lẻ'}</p>
-          <p><strong>Email:</strong> {order.customer?.email || '—'}</p>
-          <p><strong>Tổng tiền:</strong> <strong>{Number(order.total_amount).toLocaleString('vi-VN')} ₫</strong></p>
-          <p><strong>Ghi chú:</strong> {order.note || '—'}</p>
-          <p><strong>Ngày tạo:</strong> {new Date(order.created_at).toLocaleString('vi-VN')}</p>
+      {/* Info Grid */}
+      <div className="order-detail-grid">
+        {/* Order Info */}
+        <div className="order-detail-card">
+          <div className="order-detail-card-header">
+            <span className="card-icon">📦</span>
+            <h3>Thông tin đơn hàng</h3>
+          </div>
+          <div className="order-detail-info-list">
+            <div className="order-detail-info-item">
+              <span className="info-label">Khách hàng</span>
+              <span className="info-value">{order.customer?.name || 'Khách lẻ'}</span>
+            </div>
+            <div className="order-detail-info-item">
+              <span className="info-label">Email</span>
+              <span className="info-value">{order.customer?.email || '—'}</span>
+            </div>
+            <div className="order-detail-info-item">
+              <span className="info-label">Tổng tiền</span>
+              <span className="info-value info-value-price">{formatPrice(order.total_amount)}</span>
+            </div>
+            <div className="order-detail-info-item">
+              <span className="info-label">Ghi chú</span>
+              <span className="info-value">{order.note || '—'}</span>
+            </div>
+          </div>
         </div>
 
-        <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-          <h3>Trạng thái đơn hàng</h3>
-          <div style={{ marginBottom: '12px' }}>
-            <span style={{
-              padding: '6px 12px',
-              borderRadius: '4px',
-              background: statusMap[order.status]?.color || '#999',
-              color: '#fff',
-              fontSize: '14px',
-              fontWeight: 'bold',
-            }}>
-              {statusMap[order.status]?.label || order.status}
-            </span>
+        {/* Status */}
+        <div className="order-detail-card">
+          <div className="order-detail-card-header">
+            <span className="card-icon">🔄</span>
+            <h3>Trạng thái đơn hàng</h3>
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Cập nhật trạng thái:</label>
-            <select
-              value={order.status}
-              onChange={(e) => handleStatusChange(e.target.value)}
-              disabled={updating}
-              style={{
-                padding: '8px',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                width: '100%',
-                maxWidth: '300px',
-              }}
-            >
-              {statusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {statusMap[status]?.label || status}
-                </option>
-              ))}
-            </select>
-            {updating && <span style={{ marginLeft: '8px', color: '#999' }}>Đang cập nhật...</span>}
+          <div className="order-detail-status-section">
+            <div className="order-detail-current-status">
+              <span className="status-label">Hiện tại:</span>
+              <span className={`order-detail-status-badge status-${order.status}`}>
+                <span className="status-dot"></span>
+                {statusMap[order.status]?.label || order.status}
+              </span>
+            </div>
+            <div className="order-detail-status-update">
+              <label className="update-label">Cập nhật trạng thái:</label>
+              <div className="update-select-wrapper">
+                <select
+                  value={order.status}
+                  onChange={(e) => handleStatusChange(e.target.value)}
+                  disabled={updating}
+                  className="order-detail-status-select"
+                >
+                  {statusOptions.map((status) => (
+                    <option key={status} value={status}>
+                      {statusMap[status]?.label || status}
+                    </option>
+                  ))}
+                </select>
+                {updating && (
+                  <span className="updating-indicator">
+                    <span className="updating-spinner"></span>
+                    Đang cập nhật...
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-        <h3>Chi tiết sản phẩm</h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f5f5f5' }}>
-              <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>STT</th>
-              <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Tên sản phẩm</th>
-              <th style={{ padding: '8px', textAlign: 'right', borderBottom: '1px solid #ddd' }}>Số lượng</th>
-              <th style={{ padding: '8px', textAlign: 'right', borderBottom: '1px solid #ddd' }}>Đơn giá</th>
-              <th style={{ padding: '8px', textAlign: 'right', borderBottom: '1px solid #ddd' }}>Thành tiền</th>
-            </tr>
-          </thead>
-          <tbody>
-            {order.items && order.items.length > 0 ? (
-              order.items.map((item: any, index: number) => (
-                <tr key={item.id}>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{index + 1}</td>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{item.product_name}</td>
-                  <td style={{ padding: '8px', textAlign: 'right', borderBottom: '1px solid #eee' }}>{item.quantity}</td>
-                  <td style={{ padding: '8px', textAlign: 'right', borderBottom: '1px solid #eee' }}>{Number(item.price).toLocaleString('vi-VN')} ₫</td>
-                  <td style={{ padding: '8px', textAlign: 'right', borderBottom: '1px solid #eee' }}>
-                    {Number(item.price * item.quantity).toLocaleString('vi-VN')} ₫
+      {/* Products Table */}
+      <div className="order-detail-card order-detail-products">
+        <div className="order-detail-card-header">
+          <span className="card-icon">🛍️</span>
+          <h3>Chi tiết sản phẩm</h3>
+          <span className="order-detail-product-count">
+            {order.items?.length || 0} sản phẩm
+          </span>
+        </div>
+        <div className="order-detail-table-wrapper">
+          <table className="order-detail-table">
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Tên sản phẩm</th>
+                <th className="text-right">Số lượng</th>
+                <th className="text-right">Đơn giá</th>
+                <th className="text-right">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody>
+              {order.items && order.items.length > 0 ? (
+                order.items.map((item: any, index: number) => (
+                  <tr key={item.id || index} className="order-detail-product-row">
+                    <td>{index + 1}</td>
+                    <td>
+                      <div className="product-name-cell">
+                        <span className="product-name">{item.product_name}</span>
+                        {item.product_id && (
+                          <span className="product-id">ID: #{item.product_id}</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="text-right">
+                      <span className="product-quantity">{item.quantity}</span>
+                    </td>
+                    <td className="text-right">{formatPrice(item.price)}</td>
+                    <td className="text-right product-total">
+                      {formatPrice(item.price * item.quantity)}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="order-detail-empty-products">
+                    <span className="empty-icon">📭</span>
+                    <p>Không có sản phẩm nào trong đơn hàng</p>
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={5} style={{ padding: '20px', textAlign: 'center' }}>Không có sản phẩm nào.</td>
+              )}
+            </tbody>
+            <tfoot>
+              <tr className="order-detail-footer">
+                <td colSpan={4} className="text-right footer-label">
+                  Tổng cộng:
+                </td>
+                <td className="text-right footer-total">
+                  {formatPrice(order.total_amount)}
+                </td>
               </tr>
-            )}
-          </tbody>
-          <tfoot>
-            <tr style={{ fontWeight: 'bold', borderTop: '2px solid #ddd' }}>
-              <td colSpan={4} style={{ padding: '8px', textAlign: 'right' }}>Tổng cộng:</td>
-              <td style={{ padding: '8px', textAlign: 'right' }}>
-                {Number(order.total_amount).toLocaleString('vi-VN')} ₫
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+            </tfoot>
+          </table>
+        </div>
       </div>
     </div>
   );

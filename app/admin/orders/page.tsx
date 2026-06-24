@@ -1,14 +1,16 @@
+// app/admin/orders/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getOrders, deleteOrder } from '@/services/adminApi';
+import './orders.css';
 
-const statusMap: Record<string, { label: string; color: string }> = {
-  new: { label: 'Mới', color: '#2196F3' },
-  processing: { label: 'Đang xử lý', color: '#FF9800' },
-  completed: { label: 'Hoàn thành', color: '#4CAF50' },
-  cancelled: { label: 'Đã hủy', color: '#f44336' },
+const statusMap: Record<string, { label: string; color: string; bg: string }> = {
+  new: { label: 'Mới', color: '#2563eb', bg: '#eff6ff' },
+  processing: { label: 'Đang xử lý', color: '#ea580c', bg: '#fff7ed' },
+  completed: { label: 'Hoàn thành', color: '#16a34a', bg: '#f0fdf4' },
+  cancelled: { label: 'Đã hủy', color: '#dc2626', bg: '#fef2f2' },
 };
 
 export default function OrdersPage() {
@@ -67,168 +69,242 @@ export default function OrdersPage() {
     }
   };
 
+  const handleResetFilters = () => {
+    setFilters({ search: '', status: '' });
+    fetchOrders(1);
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(price);
+  };
+
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1>Quản lý đơn hàng</h1>
-        <Link href="/admin/orders/create">
-          <button
-            style={{
-              padding: '10px 20px',
-              background: '#4CAF50',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '16px',
-            }}
-          >
-            + Thêm mới
-          </button>
+    <div className="orders-container">
+      {/* Header */}
+      <div className="orders-header">
+        <div className="orders-header-left">
+          <h1 className="orders-title">
+            <span className="orders-title-icon">📦</span>
+            Quản lý đơn hàng
+          </h1>
+          <p className="orders-subtitle">
+            Tổng số đơn hàng: <span className="orders-total-count">{pagination.total}</span>
+          </p>
+        </div>
+        <Link href="/admin/orders/create" className="orders-create-btn">
+          <svg className="create-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          Thêm mới
         </Link>
       </div>
 
-      <form onSubmit={handleSearch} style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-        <input
-          type="text"
-          placeholder="Tìm kiếm theo khách hàng..."
-          value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-          style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px', flex: '1', minWidth: '200px' }}
-        />
-        <select
-          value={filters.status}
-          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-          style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        >
-          <option value="">Tất cả trạng thái</option>
-          <option value="new">Mới</option>
-          <option value="processing">Đang xử lý</option>
-          <option value="completed">Hoàn thành</option>
-          <option value="cancelled">Đã hủy</option>
-        </select>
-        <button type="submit" style={{ padding: '8px 16px', background: '#2196F3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-          Tìm kiếm
-        </button>
-        <button
-          type="button"
-          onClick={() => { setFilters({ search: '', status: '' }); fetchOrders(1); }}
-          style={{ padding: '8px 16px', background: '#999', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          Xóa lọc
-        </button>
-      </form>
+      {/* Filters */}
+      <div className="orders-filters-wrapper">
+        <form onSubmit={handleSearch} className="orders-filters">
+          <div className="orders-filters-left">
+            <div className="orders-filter-group">
+              <span className="orders-filter-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Tìm kiếm theo khách hàng..."
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                className="orders-filter-input"
+              />
+            </div>
+            <div className="orders-filter-group">
+              <select
+                value={filters.status}
+                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                className="orders-filter-select"
+              >
+                <option value="">Tất cả trạng thái</option>
+                <option value="new">🆕 Mới</option>
+                <option value="processing">⚙️ Đang xử lý</option>
+                <option value="completed">✅ Hoàn thành</option>
+                <option value="cancelled">❌ Đã hủy</option>
+              </select>
+            </div>
+          </div>
+          <div className="orders-filters-right">
+            <button type="submit" className="orders-btn-search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+              Tìm kiếm
+            </button>
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="orders-btn-reset"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9m0 0v6m0-6h-6"/>
+              </svg>
+              Xóa lọc
+            </button>
+          </div>
+        </form>
+      </div>
 
-      {loading ? (
-        <div>Đang tải...</div>
-      ) : (
-        <>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <thead>
-                <tr style={{ background: '#f5f5f5' }}>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>ID</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Khách hàng</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Tổng tiền</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Trạng thái</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Số lượng SP</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Ngày tạo</th>
-                  <th style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.length === 0 ? (
+      {/* Table */}
+      <div className="orders-table-wrapper">
+        {loading ? (
+          <div className="orders-loading">
+            <div className="orders-spinner"></div>
+            <p>Đang tải đơn hàng...</p>
+          </div>
+        ) : (
+          <>
+            <div className="orders-table-scroll">
+              <table className="orders-table">
+                <thead>
                   <tr>
-                    <td colSpan={7} style={{ padding: '40px', textAlign: 'center' }}>Không có đơn hàng nào.</td>
+                    <th>ID</th>
+                    <th>Khách hàng</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Số lượng SP</th>
+                    <th>Ngày tạo</th>
+                    <th className="orders-table-actions">Thao tác</th>
                   </tr>
-                ) : (
-                  orders.map((order) => (
-                    <tr key={order.id}>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>#{order.id}</td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                        {order.customer?.name || 'Khách lẻ'}
-                        {order.customer?.email && <div style={{ fontSize: '12px', color: '#999' }}>{order.customer.email}</div>}
-                      </td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                        {Number(order.total_amount).toLocaleString('vi-VN')} ₫
-                      </td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                        <span style={{
-                          padding: '4px 8px',
-                          borderRadius: '4px',
-                          background: statusMap[order.status]?.color || '#999',
-                          color: '#fff',
-                          fontSize: '12px',
-                        }}>
-                          {statusMap[order.status]?.label || order.status}
-                        </span>
-                      </td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                        {order.items?.length || 0}
-                      </td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                        {new Date(order.created_at).toLocaleString('vi-VN')}
-                      </td>
-                      <td style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #eee' }}>
-                        <Link href={`/admin/orders/${order.id}`} style={{ marginRight: '8px', color: '#2196F3', textDecoration: 'none' }}>
-                          Chi tiết
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(order.id)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#f44336',
-                            cursor: 'pointer',
-                            textDecoration: 'underline',
-                          }}
-                        >
-                          Xóa
-                        </button>
+                </thead>
+                <tbody>
+                  {orders.length === 0 ? (
+                    <tr>
+                      <td colSpan={7}>
+                        <div className="orders-empty">
+                          <span className="orders-empty-icon">📭</span>
+                          <p>Không có đơn hàng nào</p>
+                          <p className="orders-empty-sub">Hãy tạo đơn hàng mới để bắt đầu</p>
+                        </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {pagination.last_page > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px' }}>
-              <button
-                onClick={() => handlePageChange(pagination.current_page - 1)}
-                disabled={pagination.current_page <= 1}
-                style={{ padding: '8px 12px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', borderRadius: '4px' }}
-              >
-                &laquo;
-              </button>
-              {Array.from({ length: pagination.last_page }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    background: page === pagination.current_page ? '#2196F3' : '#fff',
-                    color: page === pagination.current_page ? '#fff' : '#000',
-                    cursor: 'pointer',
-                    borderRadius: '4px',
-                  }}
-                >
-                  {page}
-                </button>
-              ))}
-              <button
-                onClick={() => handlePageChange(pagination.current_page + 1)}
-                disabled={pagination.current_page >= pagination.last_page}
-                style={{ padding: '8px 12px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', borderRadius: '4px' }}
-              >
-                &raquo;
-              </button>
+                  ) : (
+                    orders.map((order, index) => (
+                      <tr key={order.id} className="orders-row">
+                        <td className="orders-id">
+                          <span className="orders-id-badge">#{order.id}</span>
+                        </td>
+                        <td>
+                          <div className="orders-customer">
+                            <div className="orders-customer-name">
+                              {order.customer?.name || 'Khách lẻ'}
+                            </div>
+                            {order.customer?.email && (
+                              <div className="orders-customer-email">
+                                {order.customer.email}
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td className="orders-price">
+                          {formatPrice(order.total_amount)}
+                        </td>
+                        <td>
+                          <span className={`orders-status orders-status-${order.status}`}>
+                            <span className="orders-status-dot"></span>
+                            {statusMap[order.status]?.label || order.status}
+                          </span>
+                        </td>
+                        <td className="orders-items-count">
+                          <span className="orders-items-badge">
+                            {order.items?.length || 0}
+                          </span>
+                        </td>
+                        <td className="orders-date">
+                          {new Date(order.created_at).toLocaleString('vi-VN')}
+                        </td>
+                        <td className="orders-actions">
+                          <Link 
+                            href={`/admin/orders/${order.id}`} 
+                            className="orders-action-btn orders-action-view"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                              <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            Chi tiết
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(order.id)}
+                            className="orders-action-btn orders-action-delete"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M3 6h18"/>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                            Xóa
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
-          )}
-        </>
-      )}
+
+            {/* Pagination */}
+            {pagination.last_page > 1 && (
+              <div className="orders-pagination">
+                <div className="orders-pagination-info">
+                  Hiển thị {orders.length} / {pagination.total} đơn hàng
+                </div>
+                <div className="orders-pagination-buttons">
+                  <button
+                    onClick={() => handlePageChange(pagination.current_page - 1)}
+                    disabled={pagination.current_page <= 1}
+                    className="orders-pagination-btn"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                  </button>
+                  
+                  {Array.from({ length: Math.min(pagination.last_page, 5) }, (_, i) => {
+                    let pageNum;
+                    if (pagination.last_page <= 5) {
+                      pageNum = i + 1;
+                    } else if (pagination.current_page <= 3) {
+                      pageNum = i + 1;
+                    } else if (pagination.current_page >= pagination.last_page - 2) {
+                      pageNum = pagination.last_page - 4 + i;
+                    } else {
+                      pageNum = pagination.current_page - 2 + i;
+                    }
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`orders-pagination-btn ${
+                          pageNum === pagination.current_page ? 'orders-pagination-active' : ''
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    onClick={() => handlePageChange(pagination.current_page + 1)}
+                    disabled={pagination.current_page >= pagination.last_page}
+                    className="orders-pagination-btn"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
