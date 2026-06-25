@@ -54,12 +54,23 @@ export default function AdminProductsPage() {
     <div className="products-container">
       <div className="products-header">
         <div>
-          <h1 className="products-title">📦 Quản lý sản phẩm</h1>
+          <h1 className="products-title">🌿 Quản lý sản phẩm</h1>
           <p className="products-subtitle">Quản lý danh sách sản phẩm của cửa hàng</p>
         </div>
-        {/* SPA Navigation - Link của Next.js */}
+        {/* SPA Navigation - Link của Next.js với hiệu ứng đẹp */}
         <Link href="/admin/products/create" className="products-add-btn">
-          <span className="products-add-icon">+</span> Thêm mới
+          {/* Border glow effect */}
+          <span className="border-glow"></span>
+          {/* Icon với hiệu ứng xoay */}
+          <span className="products-add-icon">+</span>
+          <span className="btn-text">Thêm mới</span>
+          {/* Particles */}
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
         </Link>
       </div>
 
@@ -135,7 +146,6 @@ export default function AdminProductsPage() {
                   </td>
                   <td>
                     <div className="products-actions">
-                      {/* SPA Navigation - Link của Next.js */}
                       <Link 
                         href={`/admin/products/edit/${p.id}`} 
                         className="products-btn-edit"

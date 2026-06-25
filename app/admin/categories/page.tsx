@@ -52,28 +52,27 @@ export default function AdminCategoriesPage() {
     <div className="categories-container">
       {/* Header */}
       <div className="categories-header">
-        <div className="categories-header-left">
-          <h1 className="categories-title">
-            <span className="categories-title-icon">📂</span>
-            Quản lý danh mục
-          </h1>
+        <div>
+          <h1 className="categories-title">📂 Quản lý danh mục</h1>
           <p className="categories-subtitle">Quản lý danh mục sản phẩm của cửa hàng</p>
         </div>
         <Link href="/admin/categories/create" className="categories-add-btn">
-          <svg className="categories-add-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 5v14M5 12h14"/>
-          </svg>
-          Thêm danh mục
+          <span className="border-glow"></span>
+          <span className="categories-add-icon">+</span>
+          <span className="btn-text">Thêm mới</span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
         </Link>
       </div>
 
       {/* Toolbar */}
       <div className="categories-toolbar">
         <div className="categories-search">
-          <svg className="categories-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="M21 21l-4.35-4.35"/>
-          </svg>
+          <span className="categories-search-icon">🔍</span>
           <input
             type="text"
             placeholder="Tìm kiếm danh mục..."
@@ -91,9 +90,7 @@ export default function AdminCategoriesPage() {
           )}
         </div>
         <div className="categories-stats">
-          <span className="categories-count">
-            {filteredCategories.length} danh mục
-          </span>
+          <span className="categories-count">Tổng: {filteredCategories.length} danh mục</span>
         </div>
       </div>
 
@@ -126,7 +123,7 @@ export default function AdminCategoriesPage() {
               </tr>
             ) : (
               filteredCategories.map((cat: any) => (
-                <tr key={cat.id} className="categories-row">
+                <tr key={cat.id}>
                   <td className="categories-id">#{String(cat.id).padStart(3, '0')}</td>
                   <td>
                     <div className="categories-name">
@@ -169,18 +166,14 @@ export default function AdminCategoriesPage() {
                         className="categories-btn-edit"
                         title="Chỉnh sửa"
                       >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-                        </svg>
+                        ✏️ Sửa
                       </Link>
                       <button
                         onClick={() => handleDelete(cat.id)}
                         className="categories-btn-delete"
                         title="Xóa"
                       >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                        </svg>
+                        🗑️ Xóa
                       </button>
                     </div>
                   </td>

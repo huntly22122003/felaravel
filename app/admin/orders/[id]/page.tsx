@@ -1,4 +1,3 @@
-// app/admin/orders/[id]/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -81,7 +80,7 @@ export default function OrderDetailPage() {
           <span className="not-found-icon">🔍</span>
           <p>Không tìm thấy đơn hàng</p>
           <Link href="/admin/orders" className="order-detail-back-link">
-            Quay lại danh sách
+            ← Quay lại danh sách
           </Link>
         </div>
       </div>
@@ -92,20 +91,14 @@ export default function OrderDetailPage() {
     <div className="order-detail-container">
       {/* Header */}
       <div className="order-detail-header">
-        <div className="order-detail-header-left">
-          <h1 className="order-detail-title">
-            <span className="order-detail-title-icon">📋</span>
-            Chi tiết đơn hàng #{order.id}
-          </h1>
+        <div>
+          <h1 className="order-detail-title">📋 Chi tiết đơn hàng #{order.id}</h1>
           <p className="order-detail-subtitle">
             Ngày tạo: {new Date(order.created_at).toLocaleString('vi-VN')}
           </p>
         </div>
         <Link href="/admin/orders" className="order-detail-back-btn">
-          <svg className="back-btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-          <span className="back-btn-text">Quay lại</span>
+          ← Quay lại
         </Link>
       </div>
 

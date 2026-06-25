@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
 import GalleryForm from '../../components/GalleryForm';
 import { getGallery, updateGallery } from '@/services/adminApi';
+import './galleries-edit.css';
 
 export default function EditGalleryPage() {
   const router = useRouter();
@@ -42,12 +44,39 @@ export default function EditGalleryPage() {
     }
   };
 
-  if (fetching) return <div style={{ padding: '20px' }}>Đang tải...</div>;
+  if (fetching) {
+    return (
+      <div className="edit-container">
+        <div className="edit-loading-container">
+          <div className="edit-loading-spinner"></div>
+          <p>Đang tải thông tin ảnh...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 style={{ marginBottom: '20px' }}>Sửa ảnh</h1>
-      <GalleryForm initialData={initialData} onSubmit={handleSubmit} isLoading={loading} buttonText="Cập nhật" />
+    <div className="edit-container">
+      {/* Header */}
+      <div className="edit-header">
+        <div>
+          <h1 className="edit-title">✏️ Sửa ảnh</h1>
+          <p className="edit-subtitle">Cập nhật thông tin ảnh #{id}</p>
+        </div>
+        <Link href="/admin/galleries" className="edit-back-btn">
+          ← Quay lại
+        </Link>
+      </div>
+
+      {/* Form */}
+      <div className="edit-form-wrapper">
+        <GalleryForm 
+          initialData={initialData} 
+          onSubmit={handleSubmit} 
+          isLoading={loading} 
+          buttonText="Cập nhật" 
+        />
+      </div>
     </div>
   );
 }

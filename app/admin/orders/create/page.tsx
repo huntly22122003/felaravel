@@ -1,4 +1,3 @@
-// app/admin/orders/create/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -121,18 +120,12 @@ export default function CreateOrderPage() {
     <div className="order-create-container">
       {/* Header */}
       <div className="order-create-header">
-        <div className="order-create-header-left">
-          <h1 className="order-create-title">
-            <span className="order-create-title-icon">➕</span>
-            Tạo đơn hàng mới
-          </h1>
+        <div>
+          <h1 className="order-create-title">➕ Tạo đơn hàng mới</h1>
           <p className="order-create-subtitle">Nhập thông tin đơn hàng và sản phẩm</p>
         </div>
         <Link href="/admin/orders" className="order-create-back-btn">
-          <svg className="back-btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-          <span className="back-btn-text">Quay lại</span>
+          ← Quay lại
         </Link>
       </div>
 
@@ -263,10 +256,7 @@ export default function CreateOrderPage() {
               onClick={() => router.back()}
               className="order-create-btn-cancel"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 6L6 18M6 6l12 12"/>
-              </svg>
-              Hủy bỏ
+              ❌ Hủy bỏ
             </button>
             <button
               type="submit"
@@ -279,13 +269,7 @@ export default function CreateOrderPage() {
                   Đang xử lý...
                 </>
               ) : (
-                <>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"/>
-                    <polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/>
-                  </svg>
-                  Tạo đơn hàng
-                </>
+                '💾 Tạo đơn hàng'
               )}
             </button>
           </div>

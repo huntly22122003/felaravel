@@ -1,4 +1,3 @@
-// app/admin/orders/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -85,20 +84,24 @@ export default function OrdersPage() {
     <div className="orders-container">
       {/* Header */}
       <div className="orders-header">
-        <div className="orders-header-left">
+        <div>
           <h1 className="orders-title">
-            <span className="orders-title-icon">📦</span>
-            Quản lý đơn hàng
+            🛒 Quản lý đơn hàng
           </h1>
           <p className="orders-subtitle">
             Tổng số đơn hàng: <span className="orders-total-count">{pagination.total}</span>
           </p>
         </div>
         <Link href="/admin/orders/create" className="orders-create-btn">
-          <svg className="create-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 5v14M5 12h14"/>
-          </svg>
-          Thêm mới
+          <span className="border-glow"></span>
+          <span className="create-icon">+</span>
+          <span className="btn-text">Thêm mới</span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
         </Link>
       </div>
 
@@ -187,7 +190,7 @@ export default function OrdersPage() {
                     </tr>
                   ) : (
                     orders.map((order, index) => (
-                      <tr key={order.id} className="orders-row">
+                      <tr key={order.id}>
                         <td className="orders-id">
                           <span className="orders-id-badge">#{order.id}</span>
                         </td>
@@ -220,28 +223,21 @@ export default function OrdersPage() {
                         <td className="orders-date">
                           {new Date(order.created_at).toLocaleString('vi-VN')}
                         </td>
-                        <td className="orders-actions">
-                          <Link 
-                            href={`/admin/orders/${order.id}`} 
-                            className="orders-action-btn orders-action-view"
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                              <circle cx="12" cy="12" r="3"/>
-                            </svg>
-                            Chi tiết
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(order.id)}
-                            className="orders-action-btn orders-action-delete"
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M3 6h18"/>
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                            </svg>
-                            Xóa
-                          </button>
-                        </td>
+                       {/* Actions - SỬA GIỐNG PRODUCTS & CATEGORIES */}
+<td className="orders-actions">
+  <Link 
+    href={`/admin/orders/${order.id}`} 
+    className="orders-action-btn orders-action-view"
+  >
+    ✏️ Chi tiết
+  </Link>
+  <button
+    onClick={() => handleDelete(order.id)}
+    className="orders-action-btn orders-action-delete"
+  >
+    🗑️ Xóa
+  </button>
+</td>
                       </tr>
                     ))
                   )}

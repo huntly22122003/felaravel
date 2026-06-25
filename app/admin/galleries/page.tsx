@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getGalleries, deleteGallery } from '@/services/adminApi';
+import './galleries.css';
 
 export default function GalleriesPage() {
   const [galleries, setGalleries] = useState<any[]>([]);
@@ -60,146 +61,201 @@ export default function GalleriesPage() {
     }
   };
 
+  const handleResetFilters = () => {
+    setFilters({ search: '', is_active: '' });
+    fetchGalleries(1);
+  };
+
+  if (loading) return (
+    <div className="galleries-loading-container">
+      <div className="galleries-loading-spinner"></div>
+      <p>Đang tải thư viện ảnh...</p>
+    </div>
+  );
+
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1>Quản lý thư viện ảnh</h1>
-        <Link href="/admin/galleries/create">
-          <button style={{
-            padding: '10px 20px',
-            background: '#4CAF50',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '16px',
-          }}>
-            + Thêm mới
-          </button>
+    <div className="galleries-container">
+      {/* Header */}
+      <div className="galleries-header">
+        <div>
+          <h1 className="galleries-title">🖼️ Quản lý thư viện ảnh</h1>
+          <p className="galleries-subtitle">
+            Tổng số ảnh: <span className="galleries-total-count">{pagination.total}</span>
+          </p>
+        </div>
+        <Link href="/admin/galleries/create" className="galleries-add-btn">
+          <span className="border-glow"></span>
+          <span className="galleries-add-icon">+</span>
+          <span className="btn-text">Thêm mới</span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
         </Link>
       </div>
 
-      <form onSubmit={handleSearch} style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-        <input
-          type="text"
-          placeholder="Tìm kiếm theo tiêu đề..."
-          value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-          style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px', flex: '1', minWidth: '200px' }}
-        />
-        <select
-          value={filters.is_active}
-          onChange={(e) => setFilters({ ...filters, is_active: e.target.value })}
-          style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        >
-          <option value="">Tất cả trạng thái</option>
-          <option value="1">Kích hoạt</option>
-          <option value="0">Không kích hoạt</option>
-        </select>
-        <button type="submit" style={{ padding: '8px 16px', background: '#2196F3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-          Tìm kiếm
-        </button>
-        <button
-          type="button"
-          onClick={() => { setFilters({ search: '', is_active: '' }); fetchGalleries(1); }}
-          style={{ padding: '8px 16px', background: '#999', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          Xóa lọc
-        </button>
-      </form>
+      {/* Filters */}
+      <div className="galleries-filters-wrapper">
+        <form onSubmit={handleSearch} className="galleries-filters">
+          <div className="galleries-filters-left">
+            <div className="galleries-filter-group">
+              <span className="galleries-filter-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Tìm kiếm theo tiêu đề..."
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                className="galleries-filter-input"
+              />
+            </div>
+            <div className="galleries-filter-group">
+              <select
+                value={filters.is_active}
+                onChange={(e) => setFilters({ ...filters, is_active: e.target.value })}
+                className="galleries-filter-select"
+              >
+                <option value="">Tất cả trạng thái</option>
+                <option value="1">🟢 Kích hoạt</option>
+                <option value="0">🔴 Không kích hoạt</option>
+              </select>
+            </div>
+          </div>
+          <div className="galleries-filters-right">
+            <button type="submit" className="galleries-btn-search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+              Tìm kiếm
+            </button>
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="galleries-btn-reset"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9m0 0v6m0-6h-6"/>
+              </svg>
+              Xóa lọc
+            </button>
+          </div>
+        </form>
+        <div className="galleries-stats">
+          <span className="galleries-count">Tổng: {galleries.length} ảnh</span>
+        </div>
+      </div>
 
-      {loading ? (
-        <div>Đang tải...</div>
-      ) : (
-        <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
-            {galleries.length === 0 ? (
-              <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px' }}>Không có ảnh nào.</div>
-            ) : (
-              galleries.map((gallery) => (
-                <div key={gallery.id} style={{ border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden', background: '#fff' }}>
-                  <img 
-                    src={gallery.image_path} 
-                    alt={gallery.title} 
-                    style={{ width: '100%', height: '200px', objectFit: 'cover' }} 
-                  />
-                  <div style={{ padding: '12px' }}>
-                    <h4 style={{ margin: '0 0 8px 0', fontSize: '16px' }}>{gallery.title}</h4>
-                    <div style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>
-                      {gallery.description ? gallery.description.substring(0, 50) + (gallery.description.length > 50 ? '...' : '') : '—'}
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{
-                        padding: '2px 8px',
-                        borderRadius: '4px',
-                        background: gallery.is_active ? '#4CAF50' : '#f44336',
-                        color: '#fff',
-                        fontSize: '11px',
-                      }}>
-                        {gallery.is_active ? 'Kích hoạt' : 'Không kích hoạt'}
-                      </span>
-                      <div>
-                        {/* ✅ Sửa link: /edit/[id] */}
-                        <Link href={`/admin/galleries/edit/${gallery.id}`} style={{ marginRight: '8px', color: '#2196F3', textDecoration: 'none', fontSize: '14px' }}>
-                          Sửa
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(gallery.id)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#f44336',
-                            cursor: 'pointer',
-                            textDecoration: 'underline',
-                            fontSize: '14px',
-                          }}
-                        >
-                          Xóa
-                        </button>
-                      </div>
-                    </div>
+      {/* Grid */}
+      <div className="galleries-grid">
+        {galleries.length === 0 ? (
+          <div className="galleries-empty">
+            <div className="galleries-empty-icon">🖼️</div>
+            <p>Chưa có ảnh nào trong thư viện</p>
+            <Link href="/admin/galleries/create" className="galleries-empty-link">
+              Thêm ảnh mới
+            </Link>
+          </div>
+        ) : (
+          galleries.map((gallery) => (
+            <div key={gallery.id} className="galleries-card">
+              <div className="galleries-card-image-wrapper">
+                <img 
+                  src={gallery.image_path} 
+                  alt={gallery.title} 
+                  className="galleries-card-image"
+                />
+                <div className="galleries-card-image-overlay"></div>
+              </div>
+              <div className="galleries-card-body">
+                <h4 className="galleries-card-title">{gallery.title || 'Chưa có tiêu đề'}</h4>
+                <p className="galleries-card-description">
+                  {gallery.description ? gallery.description : '—'}
+                </p>
+                <div className="galleries-card-footer">
+                  <span className={`galleries-card-status galleries-card-status-${gallery.is_active ? 'active' : 'inactive'}`}>
+                    {gallery.is_active ? '🟢 Kích hoạt' : '🔴 Không kích hoạt'}
+                  </span>
+                  <div className="galleries-card-actions">
+                    <Link 
+                      href={`/admin/galleries/edit/${gallery.id}`} 
+                      className="galleries-btn-edit"
+                    >
+                      ✏️ Sửa
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(gallery.id)}
+                      className="galleries-btn-delete"
+                    >
+                      🗑️ Xóa
+                    </button>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-
-          {pagination.last_page > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px' }}>
-              <button
-                onClick={() => handlePageChange(pagination.current_page - 1)}
-                disabled={pagination.current_page <= 1}
-                style={{ padding: '8px 12px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', borderRadius: '4px' }}
-              >
-                &laquo;
-              </button>
-              {Array.from({ length: pagination.last_page }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    background: page === pagination.current_page ? '#2196F3' : '#fff',
-                    color: page === pagination.current_page ? '#fff' : '#000',
-                    cursor: 'pointer',
-                    borderRadius: '4px',
-                  }}
-                >
-                  {page}
-                </button>
-              ))}
-              <button
-                onClick={() => handlePageChange(pagination.current_page + 1)}
-                disabled={pagination.current_page >= pagination.last_page}
-                style={{ padding: '8px 12px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', borderRadius: '4px' }}
-              >
-                &raquo;
-              </button>
+              </div>
             </div>
-          )}
-        </>
+          ))
+        )}
+      </div>
+
+      {/* Pagination */}
+      {pagination.last_page > 1 && (
+        <div className="galleries-pagination">
+          <div className="galleries-pagination-info">
+            Hiển thị {galleries.length} / {pagination.total} ảnh
+          </div>
+          <div className="galleries-pagination-buttons">
+            <button
+              onClick={() => handlePageChange(pagination.current_page - 1)}
+              disabled={pagination.current_page <= 1}
+              className="galleries-pagination-btn"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+            </button>
+            
+            {Array.from({ length: Math.min(pagination.last_page, 5) }, (_, i) => {
+              let pageNum;
+              if (pagination.last_page <= 5) {
+                pageNum = i + 1;
+              } else if (pagination.current_page <= 3) {
+                pageNum = i + 1;
+              } else if (pagination.current_page >= pagination.last_page - 2) {
+                pageNum = pagination.last_page - 4 + i;
+              } else {
+                pageNum = pagination.current_page - 2 + i;
+              }
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`galleries-pagination-btn ${
+                    pageNum === pagination.current_page ? 'galleries-pagination-active' : ''
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+
+            <button
+              onClick={() => handlePageChange(pagination.current_page + 1)}
+              disabled={pagination.current_page >= pagination.last_page}
+              className="galleries-pagination-btn"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </button>
+          </div>
+        </div>
       )}
+
+      {/* Footer */}
+      <div className="galleries-footer">
+        <p>🌿 © 2024 Cửa hàng cây cảnh - Quản lý thư viện ảnh</p>
+      </div>
     </div>
   );
 }

@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { createBanner, updateBanner, getBanner } from '@/services/adminApi';
+import './banners-create.css';
 
 const POSITIONS = [
   { value: '1', label: 'Menu trái' },
@@ -29,6 +31,7 @@ export default function BannerForm({ params }: { params?: { id: string } }) {
     is_active: true,
   });
   const [file, setFile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
@@ -52,11 +55,11 @@ export default function BannerForm({ params }: { params?: { id: string } }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSaving(true);
 
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        // 👇 XỬ LÝ BOOLEAN
         if (typeof value === 'boolean') {
           formData.append(key, value ? '1' : '0');
         } else {
@@ -88,107 +91,194 @@ export default function BannerForm({ params }: { params?: { id: string } }) {
       }
       setError(errorMsg);
       console.error('Lỗi chi tiết:', err);
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>{isEdit ? 'Sửa banner' : 'Thêm banner mới'}</h1>
+    <div className="create-container">
+      {/* Header */}
+      <div className="create-header">
+        <div>
+          <h1 className="create-title">
+            {isEdit ? '✏️ Sửa banner' : '➕ Thêm banner mới'}
+          </h1>
+          <p className="create-subtitle">
+            {isEdit ? 'Cập nhật thông tin banner' : 'Tạo banner mới cho cửa hàng'}
+          </p>
+        </div>
+        <Link href="/admin/banners" className="create-back-btn">
+          ← Quay lại
+        </Link>
+      </div>
+
+      {/* Error */}
       {error && (
-        <div style={{ background: '#fee', color: '#c00', padding: '10px', borderRadius: '4px', marginBottom: '16px', border: '1px solid #fcc' }}>
-          <strong>Lỗi:</strong> {error}
+        <div className="create-error">
+          <span className="create-error-icon">⚠️</span>
+          <div>
+            <strong>Lỗi:</strong> {error}
+          </div>
         </div>
       )}
-      <form onSubmit={handleSubmit} style={{ maxWidth: '600px' }}>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Tiêu đề</label>
-          <input
-            type="text"
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-          />
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="create-form">
+        <div className="create-grid">
+          {/* Left Column */}
+          <div className="create-left">
+            <div className="create-card">
+              <h3 className="create-card-title">📋 Thông tin banner</h3>
+              
+              <div className="create-group">
+                <label className="create-label">
+                  Tiêu đề <span className="create-required">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  className="create-input"
+                  placeholder="Nhập tiêu đề banner"
+                  required
+                />
+                <p className="create-hint">Tiêu đề hiển thị trên banner</p>
+              </div>
+
+              <div className="create-group">
+                <label className="create-label">Trang liên kết</label>
+                <input
+                  type="text"
+                  value={form.link}
+                  onChange={(e) => setForm({ ...form, link: e.target.value })}
+                  className="create-input"
+                  placeholder="https://example.com"
+                />
+                <p className="create-hint">Đường dẫn khi click vào banner</p>
+              </div>
+
+              <div className="create-group">
+                <label className="create-label">Vị trí</label>
+                <select
+                  value={form.position}
+                  onChange={(e) => setForm({ ...form, position: e.target.value })}
+                  className="create-select"
+                >
+                  {POSITIONS.map(p => (
+                    <option key={p.value} value={p.value}>{p.label}</option>
+                  ))}
+                </select>
+                <p className="create-hint">Vị trí hiển thị trên website</p>
+              </div>
+
+              <div className="create-group">
+                <label className="create-label">Tóm tắt</label>
+                <textarea
+                  value={form.summary}
+                  onChange={(e) => setForm({ ...form, summary: e.target.value })}
+                  className="create-textarea"
+                  rows={3}
+                  placeholder="Tóm tắt ngắn về banner"
+                />
+              </div>
+
+              <div className="create-group">
+                <label className="create-label">Nội dung chi tiết</label>
+                <textarea
+                  value={form.content}
+                  onChange={(e) => setForm({ ...form, content: e.target.value })}
+                  className="create-textarea"
+                  rows={4}
+                  placeholder="Nội dung chi tiết của banner"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div className="create-right">
+            <div className="create-card">
+              <h3 className="create-card-title">⚙️ Cài đặt</h3>
+              
+              <div className="create-group">
+                <label className="create-label">Thứ tự hiển thị</label>
+                <input
+                  type="number"
+                  value={form.sort_order}
+                  onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
+                  className="create-input"
+                  placeholder="0"
+                  min="0"
+                />
+                <p className="create-hint">Số nhỏ hơn sẽ hiển thị trước</p>
+              </div>
+
+              <div className="create-group">
+                <label className="create-label">Trạng thái</label>
+                <div className="create-toggle-group">
+                  <label className="create-toggle">
+                    <input
+                      type="checkbox"
+                      checked={form.is_active}
+                      onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
+                    />
+                    <span className="create-toggle-slider"></span>
+                    <span className="create-toggle-label">
+                      {form.is_active ? '🟢 Hiển thị' : '🔴 Ẩn'}
+                    </span>
+                  </label>
+                </div>
+                <p className="create-hint">Banner sẽ hiển thị trên website</p>
+              </div>
+            </div>
+
+            <div className="create-card">
+              <h3 className="create-card-title">🖼️ Hình ảnh</h3>
+              
+              <div className="create-upload">
+                <div className="create-upload-area">
+                  <span className="create-upload-icon">📸</span>
+                  <p className="create-upload-text">Kéo thả ảnh vào đây hoặc</p>
+                  <label className="create-upload-btn">
+                    Chọn ảnh
+                    <input
+                      type="file"
+                      onChange={(e) => setFile(e.target.files?.[0] || null)}
+                      className="create-upload-input"
+                    />
+                  </label>
+                  {file && (
+                    <p className="create-upload-filename">📎 {file.name}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Trang liên kết</label>
-          <input
-            type="text"
-            value={form.link}
-            onChange={(e) => setForm({ ...form, link: e.target.value })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Vị trí</label>
-          <select
-            value={form.position}
-            onChange={(e) => setForm({ ...form, position: e.target.value })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+
+        {/* Actions */}
+        <div className="create-actions">
+          <button 
+            type="submit" 
+            className="create-btn-save" 
+            disabled={saving}
           >
-            {POSITIONS.map(p => (
-              <option key={p.value} value={p.value}>{p.label}</option>
-            ))}
-          </select>
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Tóm tắt nội dung</label>
-          <textarea
-            value={form.summary}
-            onChange={(e) => setForm({ ...form, summary: e.target.value })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-            rows={3}
-          />
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Chi tiết nội dung</label>
-          <textarea
-            value={form.content}
-            onChange={(e) => setForm({ ...form, content: e.target.value })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-            rows={5}
-          />
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>File ảnh</label>
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-            style={{ width: '100%' }}
-          />
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>Thứ tự</label>
-          <input
-            type="number"
-            value={form.sort_order}
-            onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
-            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={form.is_active}
-              onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
-            />
-            Hiển thị
-          </label>
-        </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button
-            type="submit"
-            style={{ background: '#4A865A', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-          >
-            Lưu
+            {saving ? (
+              <>
+                <span className="create-spinner"></span>
+                Đang lưu...
+              </>
+            ) : (
+              `💾 ${isEdit ? 'Cập nhật' : 'Lưu'} banner`
+            )}
           </button>
-          <button
-            type="button"
-            onClick={() => router.push('/admin/banners')}
-            style={{ background: '#ccc', padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+          <Link
+            href="/admin/banners"
+            className="create-btn-cancel"
           >
-            Hủy
-          </button>
+            ❌ Hủy bỏ
+          </Link>
         </div>
       </form>
     </div>

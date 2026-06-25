@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import PostForm from '../components/PostForm';
 import { createPost } from '@/services/adminApi';
+import './posts-create.css';
 
 export default function CreatePostPage() {
   const router = useRouter();
@@ -23,9 +25,22 @@ export default function CreatePostPage() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 style={{ marginBottom: '20px' }}>Thêm bài viết mới</h1>
-      <PostForm onSubmit={handleSubmit} isLoading={loading} buttonText="Tạo mới" />
+    <div className="create-container">
+      {/* Header */}
+      <div className="create-header">
+        <div>
+          <h1 className="create-title">📝 Thêm bài viết mới</h1>
+          <p className="create-subtitle">Tạo bài viết mới cho trang tin tức</p>
+        </div>
+        <Link href="/admin/posts" className="create-back-btn">
+          ← Quay lại
+        </Link>
+      </div>
+
+      {/* Form */}
+      <div className="create-form-wrapper">
+        <PostForm onSubmit={handleSubmit} isLoading={loading} buttonText="Tạo mới" />
+      </div>
     </div>
   );
 }

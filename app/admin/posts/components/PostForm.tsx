@@ -29,7 +29,6 @@ export default function PostForm({ initialData, onSubmit, isLoading, buttonText 
     const fetchCategories = async () => {
       try {
         const res = await getCategories({ per_page: 100 });
-        // Kiểm tra cấu trúc response: có thể res.data hoặc res là mảng
         const catData = res.data ?? res ?? [];
         setCategories(Array.isArray(catData) ? catData : []);
       } catch (error) {
@@ -78,131 +77,177 @@ export default function PostForm({ initialData, onSubmit, isLoading, buttonText 
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Tiêu đề *</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
-      </div>
+    <form onSubmit={handleSubmit} className="create-form">
+      <div className="create-grid">
+        {/* Left Column */}
+        <div className="create-left">
+          <div className="create-card">
+            <h3 className="create-card-title">📋 Thông tin bài viết</h3>
 
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Slug</label>
-        <input
-          type="text"
-          value={slug}
-          onChange={(e) => setSlug(e.target.value)}
-          placeholder="Để trống sẽ tự động sinh từ tiêu đề"
-          style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
-      </div>
+            <div className="create-group">
+              <label className="create-label">
+                Tiêu đề <span className="create-required">*</span>
+              </label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="create-input"
+                placeholder="Nhập tiêu đề bài viết"
+                required
+              />
+            </div>
 
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Danh mục</label>
-        <select
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-          disabled={loadingCategories}
-        >
-          <option value="">{loadingCategories ? 'Đang tải...' : 'Không chọn'}</option>
-          {categories.map((cat: any) => (
-            <option key={cat.id} value={cat.id}>{cat.name}</option>
-          ))}
-        </select>
-      </div>
+            <div className="create-group">
+              <label className="create-label">Slug</label>
+              <input
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                className="create-input"
+                placeholder="Để trống sẽ tự động sinh từ tiêu đề"
+              />
+              <p className="create-hint">Đường dẫn thân thiện với SEO</p>
+            </div>
 
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Tóm tắt</label>
-        <textarea
-          rows={3}
-          value={summary}
-          onChange={(e) => setSummary(e.target.value)}
-          style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
-      </div>
+            <div className="create-group">
+              <label className="create-label">Danh mục</label>
+              <select
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className="create-select"
+                disabled={loadingCategories}
+              >
+                <option value="">{loadingCategories ? 'Đang tải...' : 'Chọn danh mục'}</option>
+                {categories.map((cat: any) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
 
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Nội dung</label>
-        <textarea
-          rows={10}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
-      </div>
-
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Ảnh đại diện</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleThumbnailChange}
-          style={{ marginBottom: '8px' }}
-        />
-        {thumbnailPreview && (
-          <div>
-            <img src={thumbnailPreview} alt="Thumbnail preview" style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover' }} />
+            <div className="create-group">
+              <label className="create-label">Tóm tắt</label>
+              <textarea
+                rows={3}
+                value={summary}
+                onChange={(e) => setSummary(e.target.value)}
+                className="create-textarea"
+                placeholder="Tóm tắt nội dung bài viết"
+              />
+            </div>
           </div>
-        )}
+        </div>
+
+        {/* Right Column */}
+        <div className="create-right">
+          <div className="create-card">
+            <h3 className="create-card-title">⚙️ Cài đặt</h3>
+
+            <div className="create-group">
+              <label className="create-label">Ngày đăng</label>
+              <input
+                type="date"
+                value={publishedAt}
+                onChange={(e) => setPublishedAt(e.target.value)}
+                max="2099-12-31"
+                className="create-input"
+              />
+              <p className="create-hint">Chọn ngày xuất bản bài viết</p>
+            </div>
+
+            <div className="create-group">
+              <label className="create-label">Trạng thái</label>
+              <div className="create-toggle-group">
+                <label className="create-toggle">
+                  <input
+                    type="checkbox"
+                    checked={isActive}
+                    onChange={(e) => setIsActive(e.target.checked)}
+                  />
+                  <span className="create-toggle-slider"></span>
+                  <span className="create-toggle-label">
+                    {isActive ? '🟢 Kích hoạt' : '🔴 Không kích hoạt'}
+                  </span>
+                </label>
+              </div>
+              <p className="create-hint">Bài viết sẽ hiển thị trên website</p>
+            </div>
+          </div>
+
+          <div className="create-card">
+            <h3 className="create-card-title">🖼️ Ảnh đại diện</h3>
+
+            <div className="create-upload">
+              <div className="create-upload-area">
+                <span className="create-upload-icon">📸</span>
+                <p className="create-upload-text">Kéo thả ảnh vào đây hoặc</p>
+                <label className="create-upload-btn">
+                  Chọn ảnh
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleThumbnailChange}
+                    className="create-upload-input"
+                  />
+                </label>
+                {thumbnail && (
+                  <p className="create-upload-filename">📎 {thumbnail.name}</p>
+                )}
+              </div>
+            </div>
+
+            {thumbnailPreview && (
+              <div className="create-current-image">
+                <p className="create-current-label">Ảnh xem trước:</p>
+                <img 
+                  src={thumbnailPreview} 
+                  alt="Thumbnail preview" 
+                  className="create-current-img"
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Ngày đăng</label>
-        <input
-          type="date"
-          value={publishedAt}
-          onChange={(e) => setPublishedAt(e.target.value)}
-          max="2099-12-31"
-          style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
-      </div>
-
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <input
-            type="checkbox"
-            checked={isActive}
-            onChange={(e) => setIsActive(e.target.checked)}
+      {/* Nội dung - Full width */}
+      <div className="create-card">
+        <h3 className="create-card-title">📄 Nội dung</h3>
+        <div className="create-group">
+          <label className="create-label">Nội dung chi tiết</label>
+          <textarea
+            rows={10}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="create-textarea"
+            placeholder="Viết nội dung chi tiết của bài viết..."
+            style={{ minHeight: '200px' }}
           />
-          Kích hoạt
-        </label>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '12px' }}>
+      {/* Actions */}
+      <div className="create-actions">
         <button
           type="submit"
+          className="create-btn-save"
           disabled={isLoading}
-          style={{
-            padding: '10px 24px',
-            background: '#2196F3',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '16px',
-          }}
         >
-          {isLoading ? 'Đang xử lý...' : buttonText}
+          {isLoading ? (
+            <>
+              <span className="create-spinner"></span>
+              Đang xử lý...
+            </>
+          ) : (
+            `💾 ${buttonText}`
+          )}
         </button>
         <button
           type="button"
           onClick={() => router.back()}
-          style={{
-            padding: '10px 24px',
-            background: '#999',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '16px',
-          }}
+          className="create-btn-cancel"
         >
-          Hủy
+          ❌ Hủy bỏ
         </button>
       </div>
     </form>

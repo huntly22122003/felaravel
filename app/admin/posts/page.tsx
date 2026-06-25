@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getPosts, deletePost } from '@/services/adminApi';
+import './posts.css';
 
 export default function PostsPage() {
   const router = useRouter();
@@ -62,165 +63,229 @@ export default function PostsPage() {
     }
   };
 
+  const handleResetFilters = () => {
+    setFilters({ search: '', is_active: '' });
+    fetchPosts(1);
+  };
+
+  if (loading) return (
+    <div className="posts-loading-container">
+      <div className="posts-loading-spinner"></div>
+      <p>Đang tải bài viết...</p>
+    </div>
+  );
+
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1>Quản lý tin tức</h1>
-        <Link href="/admin/posts/create">
-          <button style={{
-            padding: '10px 20px',
-            background: '#4CAF50',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '16px',
-          }}>
-            + Thêm mới
-          </button>
+    <div className="posts-container">
+      {/* Header */}
+      <div className="posts-header">
+        <div>
+          <h1 className="posts-title">📰 Quản lý tin tức</h1>
+          <p className="posts-subtitle">
+            Tổng số bài viết: <span className="posts-total-count">{pagination.total}</span>
+          </p>
+        </div>
+        <Link href="/admin/posts/create" className="posts-add-btn">
+          <span className="border-glow"></span>
+          <span className="posts-add-icon">+</span>
+          <span className="btn-text">Thêm mới</span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
         </Link>
       </div>
 
-      {/* Bộ lọc */}
-      <form onSubmit={handleSearch} style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-        <input
-          type="text"
-          placeholder="Tìm kiếm theo tiêu đề..."
-          value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-          style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px', flex: '1', minWidth: '200px' }}
-        />
-        <select
-          value={filters.is_active}
-          onChange={(e) => setFilters({ ...filters, is_active: e.target.value })}
-          style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        >
-          <option value="">Tất cả trạng thái</option>
-          <option value="1">Kích hoạt</option>
-          <option value="0">Không kích hoạt</option>
-        </select>
-        <button type="submit" style={{ padding: '8px 16px', background: '#2196F3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-          Tìm kiếm
-        </button>
-        <button
-          type="button"
-          onClick={() => { setFilters({ search: '', is_active: '' }); fetchPosts(1); }}
-          style={{ padding: '8px 16px', background: '#999', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          Xóa lọc
-        </button>
-      </form>
+      {/* Filters */}
+      <div className="posts-filters-wrapper">
+        <form onSubmit={handleSearch} className="posts-filters">
+          <div className="posts-filters-left">
+            <div className="posts-filter-group">
+              <span className="posts-filter-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Tìm kiếm theo tiêu đề..."
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                className="posts-filter-input"
+              />
+            </div>
+            <div className="posts-filter-group">
+              <select
+                value={filters.is_active}
+                onChange={(e) => setFilters({ ...filters, is_active: e.target.value })}
+                className="posts-filter-select"
+              >
+                <option value="">Tất cả trạng thái</option>
+                <option value="1">🟢 Kích hoạt</option>
+                <option value="0">🔴 Không kích hoạt</option>
+              </select>
+            </div>
+          </div>
+          <div className="posts-filters-right">
+            <button type="submit" className="posts-btn-search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+              Tìm kiếm
+            </button>
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="posts-btn-reset"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9m0 0v6m0-6h-6"/>
+              </svg>
+              Xóa lọc
+            </button>
+          </div>
+        </form>
+        <div className="posts-stats">
+          <span className="posts-count">Tổng: {posts.length} bài viết</span>
+        </div>
+      </div>
 
-      {loading ? (
-        <div>Đang tải...</div>
-      ) : (
-        <>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <thead>
-                <tr style={{ background: '#f5f5f5' }}>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>ID</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Ảnh</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Tiêu đề</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Danh mục</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Trạng thái</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Ngày đăng</th>
-                  <th style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>Thao tác</th>
+      {/* Table */}
+      <div className="posts-table-wrapper">
+        <div className="posts-table-scroll">
+          <table className="posts-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Ảnh</th>
+                <th>Tiêu đề</th>
+                <th>Danh mục</th>
+                <th>Trạng thái</th>
+                <th>Ngày đăng</th>
+                <th className="text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {posts.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="posts-empty">
+                    <div className="posts-empty-icon">📰</div>
+                    <p>Chưa có bài viết nào</p>
+                    <Link href="/admin/posts/create" className="posts-empty-link">
+                      Thêm bài viết mới
+                    </Link>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {posts.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} style={{ padding: '40px', textAlign: 'center' }}>Không có bài viết nào.</td>
-                  </tr>
-                ) : (
-                  posts.map((post) => (
-                    <tr key={post.id}>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{post.id}</td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                        {post.thumbnail ? (
-                          <img src={post.thumbnail} alt={post.title} style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
-                        ) : (
-                          <span style={{ color: '#999' }}>—</span>
-                        )}
-                      </td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{post.title}</td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{post.category?.name || '—'}</td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                        <span style={{
-                          padding: '4px 8px',
-                          borderRadius: '4px',
-                          background: post.is_active ? '#4CAF50' : '#f44336',
-                          color: '#fff',
-                          fontSize: '12px',
-                        }}>
-                          {post.is_active ? 'Kích hoạt' : 'Không kích hoạt'}
-                        </span>
-                      </td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                        {post.published_at ? new Date(post.published_at).toLocaleDateString('vi-VN') : '—'}
-                      </td>
-                      <td style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #eee' }}>
-                        <Link href={`/admin/posts/${post.id}/edit`} style={{ marginRight: '8px', color: '#2196F3', textDecoration: 'none' }}>
-                          Sửa
+              ) : (
+                posts.map((post) => (
+                  <tr key={post.id}>
+                    <td className="posts-id">#{post.id}</td>
+                    <td>
+                      {post.thumbnail ? (
+                        <div className="posts-thumbnail-wrapper">
+                          <img src={post.thumbnail} alt={post.title} className="posts-thumbnail" />
+                        </div>
+                      ) : (
+                        <span className="posts-no-thumbnail">📷</span>
+                      )}
+                    </td>
+                    <td>
+                      <div className="posts-title-text">{post.title}</div>
+                    </td>
+                    <td>
+                      <span className="posts-category">
+                        {post.category?.name || '—'}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`posts-status posts-status-${post.is_active ? 'active' : 'inactive'}`}>
+                        {post.is_active ? '🟢 Kích hoạt' : '🔴 Không kích hoạt'}
+                      </span>
+                    </td>
+                    <td className="posts-date">
+                      {post.published_at ? new Date(post.published_at).toLocaleDateString('vi-VN') : '—'}
+                    </td>
+                    <td>
+                      <div className="posts-actions">
+                        <Link 
+                          href={`/admin/posts/edit/${post.id}`} 
+                          className="posts-btn-edit"
+                        >
+                          ✏️ Sửa
                         </Link>
                         <button
                           onClick={() => handleDelete(post.id)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#f44336',
-                            cursor: 'pointer',
-                            textDecoration: 'underline',
-                          }}
+                          className="posts-btn-delete"
                         >
-                          Xóa
+                          🗑️ Xóa
                         </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
-          {/* Phân trang */}
-          {pagination.last_page > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px' }}>
+        {/* Pagination */}
+        {pagination.last_page > 1 && (
+          <div className="posts-pagination">
+            <div className="posts-pagination-info">
+              Hiển thị {posts.length} / {pagination.total} bài viết
+            </div>
+            <div className="posts-pagination-buttons">
               <button
                 onClick={() => handlePageChange(pagination.current_page - 1)}
                 disabled={pagination.current_page <= 1}
-                style={{ padding: '8px 12px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', borderRadius: '4px' }}
+                className="posts-pagination-btn"
               >
-                &laquo;
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
               </button>
-              {Array.from({ length: pagination.last_page }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    background: page === pagination.current_page ? '#2196F3' : '#fff',
-                    color: page === pagination.current_page ? '#fff' : '#000',
-                    cursor: 'pointer',
-                    borderRadius: '4px',
-                  }}
-                >
-                  {page}
-                </button>
-              ))}
+              
+              {Array.from({ length: Math.min(pagination.last_page, 5) }, (_, i) => {
+                let pageNum;
+                if (pagination.last_page <= 5) {
+                  pageNum = i + 1;
+                } else if (pagination.current_page <= 3) {
+                  pageNum = i + 1;
+                } else if (pagination.current_page >= pagination.last_page - 2) {
+                  pageNum = pagination.last_page - 4 + i;
+                } else {
+                  pageNum = pagination.current_page - 2 + i;
+                }
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`posts-pagination-btn ${
+                      pageNum === pagination.current_page ? 'posts-pagination-active' : ''
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+
               <button
                 onClick={() => handlePageChange(pagination.current_page + 1)}
                 disabled={pagination.current_page >= pagination.last_page}
-                style={{ padding: '8px 12px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', borderRadius: '4px' }}
+                className="posts-pagination-btn"
               >
-                &raquo;
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
               </button>
             </div>
-          )}
-        </>
-      )}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="posts-footer">
+        <p>🌿 © 2024 Cửa hàng cây cảnh - Quản lý tin tức</p>
+      </div>
     </div>
   );
 }
