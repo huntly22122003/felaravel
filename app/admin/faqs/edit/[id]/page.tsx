@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
 import FaqForm from '../../components/FaqForm';
 import { getFaq, updateFaq } from '@/services/adminApi';
+import './faqs-edit.css';
 
 export default function EditFaqPage() {
   const router = useRouter();
@@ -42,12 +44,39 @@ export default function EditFaqPage() {
     }
   };
 
-  if (fetching) return <div style={{ padding: '20px' }}>Đang tải...</div>;
+  if (fetching) {
+    return (
+      <div className="edit-container">
+        <div className="edit-loading-container">
+          <div className="edit-loading-spinner"></div>
+          <p>Đang tải thông tin câu hỏi...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 style={{ marginBottom: '20px' }}>Sửa câu hỏi</h1>
-      <FaqForm initialData={initialData} onSubmit={handleSubmit} isLoading={loading} buttonText="Cập nhật" />
+    <div className="edit-container">
+      {/* Header */}
+      <div className="edit-header">
+        <div>
+          <h1 className="edit-title">✏️ Sửa câu hỏi</h1>
+          <p className="edit-subtitle">Cập nhật thông tin câu hỏi #{id}</p>
+        </div>
+        <Link href="/admin/faqs" className="edit-back-btn">
+          ← Quay lại
+        </Link>
+      </div>
+
+      {/* Form */}
+      <div className="edit-form-wrapper">
+        <FaqForm 
+          initialData={initialData} 
+          onSubmit={handleSubmit} 
+          isLoading={loading} 
+          buttonText="Cập nhật" 
+        />
+      </div>
     </div>
   );
 }

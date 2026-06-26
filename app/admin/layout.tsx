@@ -37,7 +37,6 @@ export default function AdminLayout({
     { path: '/admin/galleries', icon: '🖼️', label: 'Thư viện', color: '#00695C' },
     { path: '/admin/contacts', icon: '💬', label: 'Liên hệ', color: '#1565C0' },
     { path: '/admin/faqs', icon: '❓', label: 'FAQ', color: '#BF360C' },
-    { path: '/admin/settings', icon: '⚙️', label: 'Cài đặt', color: '#455A64' },
   ];
 
   useEffect(() => {

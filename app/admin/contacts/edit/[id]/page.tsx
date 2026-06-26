@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
 import ContactForm from '../../components/ContactForm';
 import { getContact, updateContact } from '@/services/adminApi';
+import './contacts-edit.css';
 
 export default function EditContactPage() {
   const router = useRouter();
@@ -42,12 +44,39 @@ export default function EditContactPage() {
     }
   };
 
-  if (fetching) return <div style={{ padding: '20px' }}>Đang tải...</div>;
+  if (fetching) {
+    return (
+      <div className="edit-container">
+        <div className="edit-loading-container">
+          <div className="edit-loading-spinner"></div>
+          <p>Đang tải thông tin liên hệ...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 style={{ marginBottom: '20px' }}>Sửa liên hệ</h1>
-      <ContactForm initialData={initialData} onSubmit={handleSubmit} isLoading={loading} buttonText="Cập nhật" />
+    <div className="edit-container">
+      {/* Header */}
+      <div className="edit-header">
+        <div>
+          <h1 className="edit-title">✏️ Sửa liên hệ</h1>
+          <p className="edit-subtitle">Cập nhật thông tin liên hệ #{id}</p>
+        </div>
+        <Link href="/admin/contacts" className="edit-back-btn">
+          ← Quay lại
+        </Link>
+      </div>
+
+      {/* Form */}
+      <div className="edit-form-wrapper">
+        <ContactForm 
+          initialData={initialData} 
+          onSubmit={handleSubmit} 
+          isLoading={loading} 
+          buttonText="Cập nhật" 
+        />
+      </div>
     </div>
   );
 }

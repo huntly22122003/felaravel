@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import ContactForm from '../components/ContactForm';
 import { createContact } from '@/services/adminApi';
+import './contacts-create.css';
 
 export default function CreateContactPage() {
   const router = useRouter();
@@ -23,9 +25,26 @@ export default function CreateContactPage() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 style={{ marginBottom: '20px' }}>Thêm liên hệ mới</h1>
-      <ContactForm onSubmit={handleSubmit} isLoading={loading} buttonText="Tạo mới" />
+    <div className="create-container">
+      {/* Header */}
+      <div className="create-header">
+        <div>
+          <h1 className="create-title">➕ Thêm liên hệ mới</h1>
+          <p className="create-subtitle">Thêm liên hệ mới vào danh sách</p>
+        </div>
+        <Link href="/admin/contacts" className="create-back-btn">
+          ← Quay lại
+        </Link>
+      </div>
+
+      {/* Form */}
+      <div className="create-form-wrapper">
+        <ContactForm 
+          onSubmit={handleSubmit} 
+          isLoading={loading} 
+          buttonText="Tạo mới" 
+        />
+      </div>
     </div>
   );
 }

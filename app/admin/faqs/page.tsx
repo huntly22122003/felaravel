@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getFaqs, deleteFaq } from '@/services/adminApi';
+import './faqs.css';
 
 export default function FaqsPage() {
   const [faqs, setFaqs] = useState<any[]>([]);
@@ -60,157 +61,221 @@ export default function FaqsPage() {
     }
   };
 
+  const handleResetFilters = () => {
+    setFilters({ search: '', is_active: '' });
+    fetchFaqs(1);
+  };
+
+  if (loading) return (
+    <div className="faqs-loading-container">
+      <div className="faqs-loading-spinner"></div>
+      <p>Đang tải câu hỏi thường gặp...</p>
+    </div>
+  );
+
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1>Quản lý FAQ</h1>
-        <Link href="/admin/faqs/create">
-          <button style={{
-            padding: '10px 20px',
-            background: '#4CAF50',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '16px',
-          }}>
-            + Thêm mới
-          </button>
+    <div className="faqs-container">
+      {/* Header */}
+      <div className="faqs-header">
+        <div>
+          <h1 className="faqs-title">❓ Quản lý FAQ</h1>
+          <p className="faqs-subtitle">
+            Tổng số câu hỏi: <span className="faqs-total-count">{pagination.total}</span>
+          </p>
+        </div>
+        <Link href="/admin/faqs/create" className="faqs-add-btn">
+          <span className="border-glow"></span>
+          <span className="faqs-add-icon">+</span>
+          <span className="btn-text">Thêm mới</span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
+          <span className="particle"></span>
         </Link>
       </div>
 
-      <form onSubmit={handleSearch} style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-        <input
-          type="text"
-          placeholder="Tìm kiếm theo câu hỏi..."
-          value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-          style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px', flex: '1', minWidth: '200px' }}
-        />
-        <select
-          value={filters.is_active}
-          onChange={(e) => setFilters({ ...filters, is_active: e.target.value })}
-          style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        >
-          <option value="">Tất cả trạng thái</option>
-          <option value="1">Kích hoạt</option>
-          <option value="0">Không kích hoạt</option>
-        </select>
-        <button type="submit" style={{ padding: '8px 16px', background: '#2196F3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-          Tìm kiếm
-        </button>
-        <button
-          type="button"
-          onClick={() => { setFilters({ search: '', is_active: '' }); fetchFaqs(1); }}
-          style={{ padding: '8px 16px', background: '#999', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          Xóa lọc
-        </button>
-      </form>
+      {/* Filters */}
+      <div className="faqs-filters-wrapper">
+        <form onSubmit={handleSearch} className="faqs-filters">
+          <div className="faqs-filters-left">
+            <div className="faqs-filter-group">
+              <span className="faqs-filter-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Tìm kiếm theo câu hỏi..."
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                className="faqs-filter-input"
+              />
+            </div>
+            <div className="faqs-filter-group">
+              <select
+                value={filters.is_active}
+                onChange={(e) => setFilters({ ...filters, is_active: e.target.value })}
+                className="faqs-filter-select"
+              >
+                <option value="">Tất cả trạng thái</option>
+                <option value="1">🟢 Kích hoạt</option>
+                <option value="0">🔴 Không kích hoạt</option>
+              </select>
+            </div>
+          </div>
+          <div className="faqs-filters-right">
+            <button type="submit" className="faqs-btn-search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+              Tìm kiếm
+            </button>
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="faqs-btn-reset"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9m0 0v6m0-6h-6"/>
+              </svg>
+              Xóa lọc
+            </button>
+          </div>
+        </form>
+        <div className="faqs-stats">
+          <span className="faqs-count">Tổng: {faqs.length} câu hỏi</span>
+        </div>
+      </div>
 
-      {loading ? (
-        <div>Đang tải...</div>
-      ) : (
-        <>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-              <thead>
-                <tr style={{ background: '#f5f5f5' }}>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>ID</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Câu hỏi</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Trả lời</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Thứ tự</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Trạng thái</th>
-                  <th style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>Thao tác</th>
+      {/* Table */}
+      <div className="faqs-table-wrapper">
+        <div className="faqs-table-scroll">
+          <table className="faqs-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Câu hỏi</th>
+                <th>Trả lời</th>
+                <th>Thứ tự</th>
+                <th>Trạng thái</th>
+                <th className="text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {faqs.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="faqs-empty">
+                    <div className="faqs-empty-icon">❓</div>
+                    <p>Chưa có câu hỏi nào</p>
+                    <Link href="/admin/faqs/create" className="faqs-empty-link">
+                      Thêm câu hỏi mới
+                    </Link>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {faqs.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} style={{ padding: '40px', textAlign: 'center' }}>Không có câu hỏi nào.</td>
-                  </tr>
-                ) : (
-                  faqs.map((faq) => (
-                    <tr key={faq.id}>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{faq.id}</td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
+              ) : (
+                faqs.map((faq) => (
+                  <tr key={faq.id}>
+                    <td className="faqs-id">#{faq.id}</td>
+                    <td>
+                      <div className="faqs-question">
                         {faq.question.length > 80 ? faq.question.substring(0, 80) + '...' : faq.question}
-                      </td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="faqs-answer">
                         {faq.answer ? (faq.answer.length > 80 ? faq.answer.substring(0, 80) + '...' : faq.answer) : '—'}
-                      </td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{faq.sort_order}</td>
-                      <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                        <span style={{
-                          padding: '4px 8px',
-                          borderRadius: '4px',
-                          background: faq.is_active ? '#4CAF50' : '#f44336',
-                          color: '#fff',
-                          fontSize: '12px',
-                        }}>
-                          {faq.is_active ? 'Kích hoạt' : 'Không kích hoạt'}
-                        </span>
-                      </td>
-                      <td style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #eee' }}>
-                        <Link href={`/admin/faqs/edit/${faq.id}`} style={{ marginRight: '8px', color: '#2196F3', textDecoration: 'none' }}>
-                          Sửa
+                      </div>
+                    </td>
+                    <td>
+                      <span className="faqs-order">{faq.sort_order || 0}</span>
+                    </td>
+                    <td>
+                      <span className={`faqs-status faqs-status-${faq.is_active ? 'active' : 'inactive'}`}>
+                        {faq.is_active ? '🟢 Kích hoạt' : '🔴 Không kích hoạt'}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="faqs-actions">
+                        <Link 
+                          href={`/admin/faqs/edit/${faq.id}`} 
+                          className="faqs-btn-edit"
+                        >
+                          ✏️ Sửa
                         </Link>
                         <button
                           onClick={() => handleDelete(faq.id)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#f44336',
-                            cursor: 'pointer',
-                            textDecoration: 'underline',
-                          }}
+                          className="faqs-btn-delete"
                         >
-                          Xóa
+                          🗑️ Xóa
                         </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
-          {pagination.last_page > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px' }}>
+        {/* Pagination */}
+        {pagination.last_page > 1 && (
+          <div className="faqs-pagination">
+            <div className="faqs-pagination-info">
+              Hiển thị {faqs.length} / {pagination.total} câu hỏi
+            </div>
+            <div className="faqs-pagination-buttons">
               <button
                 onClick={() => handlePageChange(pagination.current_page - 1)}
                 disabled={pagination.current_page <= 1}
-                style={{ padding: '8px 12px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', borderRadius: '4px' }}
+                className="faqs-pagination-btn"
               >
-                &laquo;
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
               </button>
-              {Array.from({ length: pagination.last_page }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    background: page === pagination.current_page ? '#2196F3' : '#fff',
-                    color: page === pagination.current_page ? '#fff' : '#000',
-                    cursor: 'pointer',
-                    borderRadius: '4px',
-                  }}
-                >
-                  {page}
-                </button>
-              ))}
+              
+              {Array.from({ length: Math.min(pagination.last_page, 5) }, (_, i) => {
+                let pageNum;
+                if (pagination.last_page <= 5) {
+                  pageNum = i + 1;
+                } else if (pagination.current_page <= 3) {
+                  pageNum = i + 1;
+                } else if (pagination.current_page >= pagination.last_page - 2) {
+                  pageNum = pagination.last_page - 4 + i;
+                } else {
+                  pageNum = pagination.current_page - 2 + i;
+                }
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`faqs-pagination-btn ${
+                      pageNum === pagination.current_page ? 'faqs-pagination-active' : ''
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+
               <button
                 onClick={() => handlePageChange(pagination.current_page + 1)}
                 disabled={pagination.current_page >= pagination.last_page}
-                style={{ padding: '8px 12px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', borderRadius: '4px' }}
+                className="faqs-pagination-btn"
               >
-                &raquo;
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
               </button>
             </div>
-          )}
-        </>
-      )}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="faqs-footer">
+        <p>🌿 © 2024 Cửa hàng cây cảnh - Quản lý FAQ</p>
+      </div>
     </div>
   );
 }

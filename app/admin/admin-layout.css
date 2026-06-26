@@ -107,31 +107,81 @@
   letter-spacing: 1px;
 }
 
+/* ===== TOGGLE BUTTON - HIỆU ỨNG MỚI ===== */
 .admin-sidebar-toggle {
   background: rgba(255, 255, 255, 0.08);
   border: none;
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   padding: 0.5rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   width: 36px;
   height: 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hiệu ứng glow background */
+.admin-sidebar-toggle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* Hiệu ứng shine */
+.admin-sidebar-toggle::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  transform: scale(0);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0;
+}
+
+.admin-sidebar-toggle:hover::before {
+  opacity: 1;
+}
+
+.admin-sidebar-toggle:hover::after {
+  transform: scale(1);
+  opacity: 1;
 }
 
 .admin-sidebar-toggle:hover {
   background: rgba(255, 255, 255, 0.15);
   color: white;
-  transform: scale(1.05);
+  transform: scale(1.08) rotate(8deg);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+}
+
+.admin-sidebar-toggle:active {
+  transform: scale(0.92);
+  transition-duration: 0.1s;
 }
 
 .admin-sidebar-toggle svg {
   width: 18px;
   height: 18px;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.4s ease;
+}
+
+.admin-sidebar-toggle:hover svg {
+  transform: rotate(180deg);
 }
 
 /* ===== USER INFO ===== */
@@ -190,7 +240,7 @@
   letter-spacing: 0.5px;
 }
 
-/* ===== NAVIGATION ===== */
+/* ===== NAVIGATION - HIỆU ỨNG MỚI ===== */
 .admin-sidebar-nav {
   flex: 1;
   padding: 1rem 0.75rem;
@@ -207,22 +257,62 @@
   text-decoration: none;
   font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin-bottom: 4px;
   position: relative;
   cursor: pointer;
+  overflow: hidden;
+}
+
+/* Hiệu ứng glow background cho link */
+.admin-sidebar-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* Hiệu ứng shine cho link */
+.admin-sidebar-link::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 60%);
+  transform: scale(0);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0;
+}
+
+.admin-sidebar-link:hover::before {
+  opacity: 1;
+}
+
+.admin-sidebar-link:hover::after {
+  transform: scale(1);
+  opacity: 1;
 }
 
 .admin-sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.08);
   color: white;
-  transform: translateX(4px);
+  transform: translateX(6px) scale(1.02);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.admin-sidebar-link:active {
+  transform: scale(0.96) translateX(3px);
+  transition-duration: 0.1s;
 }
 
 .admin-sidebar-link-active {
   background: rgba(255, 255, 255, 0.12);
   color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
 .admin-sidebar-link-active::before {
@@ -235,6 +325,17 @@
   height: 60%;
   background: var(--active-color, #2d5a3a);
   border-radius: 0 4px 4px 0;
+  box-shadow: 0 0 20px var(--active-color, #2d5a3a);
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--active-color, #2d5a3a);
+  }
+  50% {
+    box-shadow: 0 0 40px var(--active-color, #2d5a3a);
+  }
 }
 
 .admin-sidebar-link-icon {
@@ -242,11 +343,15 @@
   flex-shrink: 0;
   width: 32px;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .admin-sidebar-link-label {
   flex: 1;
   white-space: nowrap;
+  position: relative;
+  z-index: 1;
 }
 
 .admin-sidebar-link-indicator {
@@ -256,6 +361,8 @@
   background: var(--active-color, #2d5a3a);
   flex-shrink: 0;
   animation: pulse-dot 2s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes pulse-dot {
@@ -269,7 +376,7 @@
   }
 }
 
-/* ===== FOOTER ===== */
+/* ===== LOGOUT BUTTON - HIỆU ỨNG MỚI ===== */
 .admin-sidebar-footer {
   padding: 1rem 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -283,18 +390,60 @@
   padding: 0.75rem 1rem;
   border: none;
   border-radius: 12px;
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
+  background: rgba(239, 68, 68, 0.12);
+  color: rgba(248, 113, 113, 0.7);
   font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hiệu ứng glow background cho logout */
+.admin-sidebar-logout::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* Hiệu ứng shine cho logout */
+.admin-sidebar-logout::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 60%);
+  transform: scale(0);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0;
+}
+
+.admin-sidebar-logout:hover::before {
+  opacity: 1;
+}
+
+.admin-sidebar-logout:hover::after {
+  transform: scale(1);
+  opacity: 1;
 }
 
 .admin-sidebar-logout:hover {
   background: rgba(239, 68, 68, 0.25);
   color: #fca5a5;
-  transform: translateX(4px);
+  transform: translateX(6px) scale(1.02);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
+}
+
+.admin-sidebar-logout:active {
+  transform: scale(0.96) translateX(3px);
+  transition-duration: 0.1s;
 }
 
 .admin-sidebar-logout .logout-icon {
@@ -302,6 +451,13 @@
   flex-shrink: 0;
   width: 32px;
   text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.admin-sidebar-logout span:last-child {
+  position: relative;
+  z-index: 1;
 }
 
 /* ===== MAIN CONTENT ===== */
@@ -406,4 +562,136 @@
   .admin-main-content {
     padding: 0.75rem;
   }
+}/* ===== NAVIGATION - SỬA LỖI GẠCH CHÂN ===== */
+.admin-sidebar-nav {
+  flex: 1;
+  padding: 1rem 0.75rem;
+  overflow-y: auto;
+}
+
+.admin-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none !important; /* Bỏ gạch chân */
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-bottom: 4px;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* Loại bỏ gạch chân cho tất cả trạng thái của link */
+.admin-sidebar-link:link,
+.admin-sidebar-link:visited,
+.admin-sidebar-link:hover,
+.admin-sidebar-link:active,
+.admin-sidebar-link:focus {
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+/* Loại bỏ gạch chân cho icon */
+.admin-sidebar-link-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  width: 32px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  text-decoration: none !important;
+}
+
+/* ===== LOGOUT BUTTON - LOẠI BỎ GẠCH CHÂN ===== */
+.admin-sidebar-footer {
+  padding: 1rem 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-sidebar-logout {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.12);
+  color: rgba(248, 113, 113, 0.7);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  text-decoration: none !important;
+}
+
+.admin-sidebar-logout:link,
+.admin-sidebar-logout:visited,
+.admin-sidebar-logout:hover,
+.admin-sidebar-logout:active,
+.admin-sidebar-logout:focus {
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+.admin-sidebar-logout .logout-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  width: 32px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  text-decoration: none !important;
+}
+
+.admin-sidebar-logout span:last-child {
+  position: relative;
+  z-index: 1;
+  text-decoration: none !important;
+}
+
+/* ===== TOGGLE BUTTON - LOẠI BỎ GẠCH CHÂN ===== */
+.admin-sidebar-toggle {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+.admin-sidebar-toggle:link,
+.admin-sidebar-toggle:visited,
+.admin-sidebar-toggle:hover,
+.admin-sidebar-toggle:active,
+.admin-sidebar-toggle:focus {
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+.admin-sidebar-toggle svg {
+  width: 18px;
+  height: 18px;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.4s ease;
+  display: block;
 }

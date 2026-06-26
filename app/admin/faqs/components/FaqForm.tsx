@@ -31,79 +31,131 @@ export default function FaqForm({ initialData, onSubmit, isLoading, buttonText =
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Câu hỏi *</label>
-        <textarea
-          rows={3}
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          required
-          style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
+    <form onSubmit={handleSubmit} className="edit-form">
+      <div className="edit-grid">
+        {/* Left Column */}
+        <div className="edit-left">
+          <div className="edit-card">
+            <h3 className="edit-card-title">📝 Nội dung</h3>
+
+            <div className="edit-group">
+              <label className="edit-label">
+                Câu hỏi <span className="edit-required">*</span>
+              </label>
+              <textarea
+                rows={3}
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                className="edit-textarea"
+                placeholder="Nhập câu hỏi..."
+                required
+              />
+              <p className="edit-hint">Câu hỏi thường gặp của khách hàng</p>
+            </div>
+
+            <div className="edit-group">
+              <label className="edit-label">Câu trả lời</label>
+              <textarea
+                rows={6}
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                className="edit-textarea"
+                placeholder="Nhập câu trả lời chi tiết..."
+              />
+              <p className="edit-hint">Câu trả lời cho câu hỏi</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="edit-right">
+          <div className="edit-card">
+            <h3 className="edit-card-title">⚙️ Cài đặt</h3>
+
+            <div className="edit-group">
+              <label className="edit-label">Thứ tự sắp xếp</label>
+              <input
+                type="number"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(Number(e.target.value))}
+                className="edit-input"
+                placeholder="0"
+                min="0"
+              />
+              <p className="edit-hint">Số nhỏ hơn sẽ hiển thị trước</p>
+            </div>
+
+            <div className="edit-group">
+              <label className="edit-label">Trạng thái</label>
+              <div className="edit-toggle-group">
+                <label className="edit-toggle">
+                  <input
+                    type="checkbox"
+                    checked={isActive}
+                    onChange={(e) => setIsActive(e.target.checked)}
+                  />
+                  <span className="edit-toggle-slider"></span>
+                  <span className="edit-toggle-label">
+                    {isActive ? '🟢 Kích hoạt' : '🔴 Không kích hoạt'}
+                  </span>
+                </label>
+              </div>
+              <p className="edit-hint">Câu hỏi sẽ hiển thị trên website</p>
+            </div>
+          </div>
+
+          {initialData && (
+            <div className="edit-card">
+              <h3 className="edit-card-title">ℹ️ Thông tin</h3>
+              <div className="edit-info-box">
+                <div className="edit-info-item">
+                  <span className="edit-info-label">ID:</span>
+                  <span className="edit-info-value">#{initialData.id}</span>
+                </div>
+                <div className="edit-info-item">
+                  <span className="edit-info-label">Ngày tạo:</span>
+                  <span className="edit-info-value">
+                    {initialData.created_at 
+                      ? new Date(initialData.created_at).toLocaleDateString('vi-VN') 
+                      : new Date().toLocaleDateString('vi-VN')}
+                  </span>
+                </div>
+                {initialData.updated_at && initialData.updated_at !== initialData.created_at && (
+                  <div className="edit-info-item">
+                    <span className="edit-info-label">Cập nhật:</span>
+                    <span className="edit-info-value">
+                      {new Date(initialData.updated_at).toLocaleDateString('vi-VN')}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Câu trả lời</label>
-        <textarea
-          rows={6}
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
-      </div>
-
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Thứ tự sắp xếp</label>
-        <input
-          type="number"
-          value={sortOrder}
-          onChange={(e) => setSortOrder(Number(e.target.value))}
-          style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
-      </div>
-
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <input
-            type="checkbox"
-            checked={isActive}
-            onChange={(e) => setIsActive(e.target.checked)}
-          />
-          Kích hoạt
-        </label>
-      </div>
-
-      <div style={{ display: 'flex', gap: '12px' }}>
+      {/* Actions */}
+      <div className="edit-actions">
         <button
           type="submit"
+          className="edit-btn-save"
           disabled={isLoading}
-          style={{
-            padding: '10px 24px',
-            background: '#2196F3',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '16px',
-          }}
         >
-          {isLoading ? 'Đang xử lý...' : buttonText}
+          {isLoading ? (
+            <>
+              <span className="edit-spinner"></span>
+              Đang xử lý...
+            </>
+          ) : (
+            `💾 ${buttonText}`
+          )}
         </button>
         <button
           type="button"
           onClick={() => router.back()}
-          style={{
-            padding: '10px 24px',
-            background: '#999',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '16px',
-          }}
+          className="edit-btn-cancel"
         >
-          Hủy
+          ❌ Hủy bỏ
         </button>
       </div>
     </form>
